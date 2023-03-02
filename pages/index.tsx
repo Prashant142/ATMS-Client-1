@@ -48,11 +48,12 @@ const LandingScreen = () => {
 
   const handleSignOut = async (e: any) => {
     e.preventDefault();
-    if (username) {
-      Router.push("/login");
-      return;
-    }
-    // await asyncLogout();
+    // if (username) {
+    //   Router.push("/login");
+    //   return;
+    // }
+    console.log("in signout");
+    await asyncLogout();
     eraseCookie(storageKeys?.userName);
     Router.push("/login");
   };

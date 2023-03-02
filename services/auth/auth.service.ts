@@ -33,7 +33,7 @@ export const asyncUserLogin = async (payload: any) => {
 
 export const asyncLogout = async () => {
   try {
-    const response = await api.post("/signOut").then(async (res: any) => {
+    const response = await api.get("/logout").then(async (res: any) => {
       if (res && res?.isSuccess) {
         localStorage.clear();
         eraseCookie(storageKeys?.userName);
@@ -43,6 +43,7 @@ export const asyncLogout = async () => {
     });
     return response;
   } catch (e: any) {
+    console.log(e.message);
     localStorage.clear();
     return e.message;
   }

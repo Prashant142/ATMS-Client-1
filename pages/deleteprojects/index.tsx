@@ -70,6 +70,7 @@ const DeleteProjects = () => {
     const response = await asyncGetProjectDetails(params);
     if (response && response?.data) {
       if (typeof response?.data !== "string") {
+        console.log(response.data);
         setFilesData(response?.data);
       } else {
         errorAlert(response?.data);

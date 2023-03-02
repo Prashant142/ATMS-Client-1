@@ -314,8 +314,12 @@ export const HomeMain = styled.div`
     .title-block-bottom {
       display: flex;
       justify-content: space-between;
+      .project-tabs {
+        display: flex;
+      }
       .project-block-under {
         p {
+          margin-right: 2em;
           position: relative;
           font-weight: 500;
           font-size: 16px;

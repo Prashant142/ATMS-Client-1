@@ -74,7 +74,7 @@ const LandingScreen = () => {
       </Head>
       <s.HomeMain>
         {/* <Sidebar /> */}
-        <Header />
+        {/* <Header /> */}
         <div className="top-home-block">
           <div className="container">
             <div className="title-block">

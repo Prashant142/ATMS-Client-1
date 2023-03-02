@@ -105,7 +105,7 @@ const DeleteProjects = () => {
         <title>WiseScan | Delete Projects</title>
       </Head>
       <s.HomeMain>
-        <Header />
+        {/* <Header /> */}
         <div className="top-home-block">
           <div className="container">
             <div className="title-block">

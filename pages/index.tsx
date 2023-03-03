@@ -86,6 +86,7 @@ const LandingScreen = () => {
               <div className="project-block-under">
                 <p>Projects</p>
               </div>
+             
               <div className="profile-block">
                 <img src="assets/profile-img.png" alt="profile-img"></img>
                 <div className="profile-content">

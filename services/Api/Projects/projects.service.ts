@@ -5,7 +5,7 @@ const api = new Api();
 
 export const asyncGetAllProjects = async () => {
   const usrnme = readCookie(storageKeys.userName);
-
+ 
   const data = { usrnme: "test" };
   console.log("pwd :>> ", data);
   try {
@@ -13,6 +13,7 @@ export const asyncGetAllProjects = async () => {
       .get("/getProjects", { params: data })
       .then(async (res: any) => {
         if (res && res?.isSuccess) {
+          console.log(res);
           return res;
         }
       });
@@ -28,6 +29,7 @@ export const asyncGetProjectDetails = async (payload: any) => {
       .get("/getProjectDetails", { params: payload })
       .then(async (res: any) => {
         if (res && res?.isSuccess) {
+          console.log(res);
           return res;
         }
       });
@@ -51,3 +53,5 @@ export const asyncDownload = async (payload: any) => {
     return e.message;
   }
 };
+
+

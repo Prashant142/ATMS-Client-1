@@ -1,24 +1,28 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import * as s from "../../styles/common.style";
-import Header from "../../components/layout/header";
-import Footer from "../../components/layout/footer";
-import Head from "next/head";
+import * as s from "../../styles/common.style"
+
+import Footer from "@/components/layout/footer";
 import { DAYS, MONTHS, storageKeys, YEARS } from "@/utils/constants";
 import Router, { useRouter } from "next/router";
 import {
   asyncDownload,
   asyncGetProjectDetails,
 } from "@/services/Api/Projects/projects.service";
-import { readCookie } from "@/utils/cookieCreator";
-import { useEffect, useState } from "react";
+import { eraseCookie, readCookie } from "@/utils/cookieCreator";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { errorAlert } from "@/utils/alerts";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import moment from "moment-mini";
 import appConfig from "@/config";
-import { checkIsAuth } from "@/utils/globalFunctions";
+
+import { Box, Tab } from "@mui/material";
+import { TabContext, TabList } from "@mui/lab";
+import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
+import { asyncLogout } from "@/services/auth/auth.service";
+import Header from "../Header/header";
 
 const addProjectValidationSchema = yup.object({
   startDay: yup.number().required("Start date is required"),
@@ -35,7 +39,7 @@ const DeleteProjects = () => {
 
   const [filesData, setFilesData] = useState<any>([]);
   const router = useRouter();
-
+  const [username, setUsername] = useState("");
   const {
     register,
     handleSubmit,
@@ -51,6 +55,9 @@ const DeleteProjects = () => {
       Router.push("/");
       return;
     }
+   
+    const username = getUserName();
+    setUsername(username);
   }, []);
   useEffect(() => {
     if (router?.query && router?.query?.code && router?.query?.p_name) {
@@ -61,11 +68,30 @@ const DeleteProjects = () => {
     }
   }, [router]);
 
+  const handleSignOut = async (e: any) => {
+    e.preventDefault();
+    // if (username) {
+    //   Router.push("/login");
+    //   return;
+    // }
+    console.log("in signout");
+    await asyncLogout();
+    eraseCookie(storageKeys?.userName);
+    Router.push("/login");
+  };
+
+  const [values, setValues] = useState('');
+  const handlechange = (event:SyntheticEvent,newValue:string) => {
+   
+    setValues(newValue);
+  }
+  
+
   const fetchProjectDetails = async (date: any) => {
     const params = {
-      p_code: "Code5" || queryData?.code,
+      p_code: "TEST_C123" || queryData?.code,
       p_name: "ATMS" || queryData?.p_name,
-      date: "10-feb-2023",
+      date: "4-Mar-2023",
     };
     const response = await asyncGetProjectDetails(params);
     if (response && response?.data) {
@@ -77,6 +103,8 @@ const DeleteProjects = () => {
       }
     }
   };
+ 
+  
 
   const handleOnClickDownload = async (data: any) => {
     if (data?.filepath) {
@@ -101,33 +129,8 @@ const DeleteProjects = () => {
 
   return (
     <>
-      <Head>
-        <title>WiseScan | Delete Projects</title>
-      </Head>
-      <s.HomeMain>
-        {/* <Header /> */}
-        <div className="top-home-block">
-          <div className="container">
-            <div className="title-block">
-              <h1>
-                User <span>Login</span>
-              </h1>
-            </div>
-            <div className="title-block-bottom">
-              <div className="project-block-under">
-                <p>Projects</p>
-               
-              </div>
-              <div className="profile-block">
-                <img src="assets/profile-img.png" alt="profile-img"></img>
-                <div className="profile-content">
-                  <h5>User Name Here</h5>
-                  <Link href="/">Sign Out</Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <s.HomeMain>
+        {<Header></Header>}
         <div className="welcome-block">
           <div className="container">
             <div className="projects-img-main">
@@ -224,7 +227,7 @@ const DeleteProjects = () => {
                         <td>
                           <div className="action-block">
                             <Link
-                              href=""
+                              href={item?.filepath}
                               onClick={() => handleOnClickDownload(item)}
                             >
                               <img
@@ -239,11 +242,16 @@ const DeleteProjects = () => {
                   })}
                 </tbody>
               </table>
+              
             </s.TableCommon>
+            
           </div>
         </div>
+        </s.HomeMain>
         <Footer />
-      </s.HomeMain>
+ 
+      
+ 
     </>
   );
 };

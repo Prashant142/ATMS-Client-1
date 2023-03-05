@@ -203,18 +203,29 @@ export const Footer = styled.div`
   background: #031971;
   padding: 32px;
   text-align: center;
+  margin-top:auto;
+  
+  left: 0;
+  bottom: 0;
+  width: 100%;
+
+  
+
   p {
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
     letter-spacing: 0.01em;
     color: #ffffff;
+   
+    
   }
 `;
 
 export const Header = styled.div`
   position: relative;
   background-color: #fff;
+
   .header-block {
     display: flex;
     align-items: center;
@@ -291,11 +302,14 @@ export const Header = styled.div`
 
 export const HomeMain = styled.div`
   font-family: "Inter", sans-serif;
-  position: relative;
+       
+       
   .top-home-block {
     background-color: #000;
     padding-top: 56px;
     font-family: "Inter", sans-serif;
+     
+        
 
     .title-block {
       padding-bottom: 45px;
@@ -327,6 +341,7 @@ export const HomeMain = styled.div`
           text-align: center;
           letter-spacing: 0.01em;
           color: #ffffff;
+          cursor:pointer;
           padding: 7px 10px 15px;
           &:before {
             content: "";
@@ -338,6 +353,8 @@ export const HomeMain = styled.div`
             width: 100%;
             height: 5px;
           }
+
+       
         }
       }
       .profile-block {

@@ -55,7 +55,7 @@ const DeleteProjects = () => {
       Router.push("/");
       return;
     }
-   
+
     const username = getUserName();
     setUsername(username);
   }, []);
@@ -81,18 +81,19 @@ const DeleteProjects = () => {
   };
 
   const [values, setValues] = useState('');
-  const handlechange = (event:SyntheticEvent,newValue:string) => {
-   
+  const handlechange = (event: SyntheticEvent, newValue: string) => {
+
     setValues(newValue);
   }
-  
+
 
   const fetchProjectDetails = async (date: any) => {
     const params = {
-      p_code: "TEST_C123" || queryData?.code,
-      p_name: "ATMS" || queryData?.p_name,
-      date: "4-Mar-2023",
+      p_code: queryData?.code,
+      p_name: queryData?.p_name,
+      date: date,
     };
+    console.log(params);
     const response = await asyncGetProjectDetails(params);
     if (response && response?.data) {
       if (typeof response?.data !== "string") {
@@ -103,12 +104,20 @@ const DeleteProjects = () => {
       }
     }
   };
- 
-  
+
+
 
   const handleOnClickDownload = async (data: any) => {
+    console.log(data?.filename);
     if (data?.filepath) {
-      //Do download file stuff
+        const response = await asyncDownload(data?.filename);
+        if(response && response?.data) {
+          if(typeof response?.data !== "string"){
+            console.log(response.data);
+          }
+        } else {
+          errorAlert(response?.data);
+        }
     }
   };
 
@@ -122,20 +131,20 @@ const DeleteProjects = () => {
       });
       return;
     }
-    const date = moment(start_date, "DD-M-YYYY").format("DD-MMM-YYYY");
+    const date = moment(start_date, "D-M-YYYY").format("D-MMM-YYYY");
     fetchProjectDetails(date);
     console.log("data :>> ", data, date);
   };
 
   return (
     <>
-    <s.HomeMain>
+      <s.HomeMain>
         {<Header></Header>}
         <div className="welcome-block">
           <div className="container">
             <div className="projects-img-main">
-              <img src="assets/profile-img.png" alt="profile-img"></img>
-              <h5>{query?.name}</h5>
+              
+              <h5>{queryData?.p_name}</h5>
             </div>
             <form onSubmit={handleSubmit(onSubmitProduct)}>
               <div className="select-custom-block">
@@ -176,29 +185,26 @@ const DeleteProjects = () => {
                   errors?.startMonth ||
                   errors?.startYear ||
                   errors?.invalidStartDate) && (
-                  <s.ErrorMessageBlock>
-                    Please enter valid start date
-                  </s.ErrorMessageBlock>
-                )}
+                    <s.ErrorMessageBlock>
+                      Please enter valid start date
+                    </s.ErrorMessageBlock>
+                  )}
                 <div className="common-form-block-inner">
                   <div className="last-btn">
                     <button type="submit" className="btn common-button-yellow">
                       Submit
                     </button>
+                   
                   </div>
+                  
                 </div>
               </div>
             </form>
-            <s.TableCommon>
+           { filesData[0]?.err ? <h1 style={{color:'black'}}>{filesData[0].err}</h1> :<s.TableCommon>
               <table>
                 <thead>
                   <tr>
-                    <th>
-                      <div className="form-group">
-                        <input type="checkbox" checked></input>
-                        <label></label>
-                      </div>
-                    </th>
+                    
                     <th>Files name</th>
                     <th>Time</th>
                     <th>Action</th>
@@ -208,12 +214,7 @@ const DeleteProjects = () => {
                   {filesData?.map((item: any, index: number) => {
                     return (
                       <tr key={index}>
-                        <td>
-                          <div className="form-group">
-                            <input type="checkbox"></input>
-                            <label></label>
-                          </div>
-                        </td>
+                       
                         <td>
                           <div className="pdf-block">
                             <img
@@ -228,6 +229,7 @@ const DeleteProjects = () => {
                           <div className="action-block">
                             <Link
                               href={item?.filepath}
+                              target="_blank"
                               onClick={() => handleOnClickDownload(item)}
                             >
                               <img
@@ -235,6 +237,7 @@ const DeleteProjects = () => {
                                 alt="download-icon"
                               ></img>
                             </Link>
+
                           </div>
                         </td>
                       </tr>
@@ -242,16 +245,16 @@ const DeleteProjects = () => {
                   })}
                 </tbody>
               </table>
-              
-            </s.TableCommon>
-            
+
+            </s.TableCommon>}
+
           </div>
         </div>
-        </s.HomeMain>
-        <Footer />
- 
-      
- 
+      </s.HomeMain>
+      <Footer />
+
+
+
     </>
   );
 };

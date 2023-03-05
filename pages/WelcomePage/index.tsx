@@ -5,11 +5,11 @@ import Link from "next/link";
 import Head from "next/head";
 
 import { useEffect, useRef, useState } from "react";
-import { asyncGetAllProjects } from "@/services/Api/Projects/projects.service";
+import { asyncdeleteproject, asyncGetAllProjects } from "@/services/Api/Projects/projects.service";
 import Router from "next/router";
 import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
 
-import { errorAlert } from "@/utils/alerts";
+import { errorAlert, successAlert } from "@/utils/alerts";
 import Loader from "@/components/Loader";
 import Header from "../Header/header";
 import Footer from "@/components/layout/footer";
@@ -64,6 +64,24 @@ const WelcomePage = () => {
       };
 
 
+      const handledeleteProject = async (data:any) => {
+        setIsLoading(true);
+        const response = await asyncdeleteproject(data);
+        window.location.reload();
+        successAlert("Deleted successfully");
+        setIsLoading(false);
+       
+    
+        console.log("response: ", response);
+        if (response) {
+          if (response?.data) {
+            successAlert("Login successfully");
+             console.log("deleted Successfully!")
+          }
+          errorAlert(response);
+        }
+      }
+
 
 
 
@@ -74,7 +92,7 @@ const WelcomePage = () => {
          <div className="welcome-block">
           <div className="container">
             <div className="welcome-block-inner">
-              <h3>Welcome to Weiyi</h3>
+              <h3>Welcome to WiseScan</h3>
               <p>
                 Lorem ipsum dolor sit amet consectetur. Sit vitae aliquam
                 malesuada quis. Nunc mi quam tempus scelerisque. Nam at netus
@@ -96,10 +114,7 @@ const WelcomePage = () => {
                   return (
                     <div className="projects-block-list-inner" key={index}>
                       <div className="projects-img">
-                        <img
-                          src="assets/profile-img.png"
-                          alt="profile-img"
-                        ></img>
+                        
                         <h5>{item?.p_name}</h5>
                       </div>
                       <div className="projects-link">
@@ -112,7 +127,7 @@ const WelcomePage = () => {
                             alt="eye-outline"
                           ></img>
                         </Link>
-                        <Link href="">
+                        <Link href="" onClick={() => handledeleteProject(item?.code)}>
                           <img
                             src="assets/trash-outline.svg"
                             alt="trash-outline"

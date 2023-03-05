@@ -13,16 +13,12 @@ import { eraseCookie, readCookie } from "@/utils/cookieCreator";
 import { storageKeys } from "@/utils/constants";
 
 
-import WelcomePage from "./WelcomePage";
 
 
-import { TabContext,TabList,TabPanel } from "@mui/lab";
 
 
-import {Box,Tab} from "@mui/material";
-import TrailLog from "./getTrailreport";
 import Header from "./Header/header";
-import { getState } from "@/services/Api/Projects/projects.service";
+import WelcomePage from "./WelcomePage";
 
 
 const LandingScreen = () => {
@@ -30,11 +26,7 @@ const LandingScreen = () => {
   // const dataFetchedRef = useRef(false);
   const [username, setUsername] = useState("");
 
-  const pages = {
-    '1': '/WelcomePage',
-    '2':'/getTrailreport',
-    '3':'/'
-  }
+  
   useEffect(() => {
     if (!checkIsAuth()) {
       Router.push("/login");
@@ -42,7 +34,7 @@ const LandingScreen = () => {
     }
     const username = getUserName();
     setUsername(username);
-    setValue(getState());
+  
     // if (dataFetchedRef.current) return;
     // dataFetchedRef.current = true;
     // fetchProjects();
@@ -68,17 +60,17 @@ const LandingScreen = () => {
   //   }
   // };
 
-  const handleSignOut = async (e: any) => {
-    e.preventDefault();
-    // if (username) {
-    //   Router.push("/login");
-    //   return;
-    // }
-    console.log("in signout");
-    await asyncLogout();
-    eraseCookie(storageKeys?.userName);
-    Router.push("/login");
-  };
+  // const handleSignOut = async (e: any) => {
+  //   e.preventDefault();
+  //   // if (username) {
+  //   //   Router.push("/login");
+  //   //   return;
+  //   // }
+  //   console.log("in signout");
+  //   await asyncLogout();
+  //   eraseCookie(storageKeys?.userName);
+  //   Router.push("/login");
+  // };
 
   // const handleOnClickViewProject = (data: any) => {
   //   if (data) {
@@ -93,7 +85,7 @@ const LandingScreen = () => {
     <>
        
        <Header></Header>
-       
+     
         <Footer />
      
     </>

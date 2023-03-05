@@ -13,6 +13,7 @@ import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
 import { eraseCookie, readCookie } from "@/utils/cookieCreator";
 import { storageKeys } from "@/utils/constants";
 import WelcomePage from "../WelcomePage";
+import TrailLog from "../getTrailreport";
 
 let initialState = true;
 
@@ -20,18 +21,33 @@ let initialState = true;
 const Header = () => {
 
     
-  
+  const [value , setvalue] = useState(1);
   const [username, setUsername] = useState("");
-  const [pageno,setpageno]  = useState(1);
+
+ 
+  
  
   const changepage = (value:any) => {
-    if(value === 1){
-      Router.push('/WelcomePage');
-    }  
+    // if(value === 1){
+    //   Router.push('/WelcomePage');
+    // }  
 
-    if(value === 2){
+    // if(value === 2){
+    //   Router.push('/getTrailreport');
+    // }
+
+     setvalue(value);
+     if(value === 1) {
+      Router.push('/WelcomePage');
+
+     }
+     if(value ===2) {
       Router.push('/getTrailreport');
-    }
+     }
+
+     if(value === 3) {
+      Router.push('/getIcomingPackages')
+     }
     
    
 
@@ -54,13 +70,7 @@ const Header = () => {
     // fetchProjects();
   }, []);
 
-  useEffect(() => {
-        if(initialState === true){
-          changepage(1);
-          initialState = false;
-        }
-        
-  },[])
+ 
 
   const handleSignOut = async (e: any) => {
     e.preventDefault();
@@ -115,7 +125,7 @@ const Header = () => {
 
               </div>
               <div className="profile-block">
-                <img src="assets/profile-img.png" alt="profile-img"></img>
+               
                 <div className="profile-content">
                   {username && <h5>{username}</h5>}
                   {/* <Link href="/">Sign Out</Link> */}
@@ -188,9 +198,8 @@ const Header = () => {
          {/* <TabPanel value="1"><WelcomePage/></TabPanel>
     <TabPanel value="2"><TrailLog></TrailLog></TabPanel>
     <TabPanel value="3">Panel 3</TabPanel> */}
-        
+      
     
-       
       </s.HomeMain>
    
    </>

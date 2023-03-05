@@ -11,7 +11,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Router, { useRouter } from "next/router";
-import { checkIsAuth } from "@/utils/globalFunctions";
+
 import { errorAlert, successAlert } from "@/utils/alerts";
 import Loader from "@/components/Loader";
 
@@ -39,7 +39,7 @@ const ForgotPassword = () => {
       setIsLoading(false);
       if (response) {
         if (response?.data) {
-          Router.push("/");
+          Router.push("/login");
           return;
         }
         errorAlert(response?.data);

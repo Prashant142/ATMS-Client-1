@@ -32,10 +32,14 @@ export const asyncUserLogin = async (payload: any) => {
 };
 
 export const asyncLogout = async () => {
+  const usrnme = readCookie(storageKeys.userName);
+ 
+  const data = { usrnme: usrnme };
   try {
-    const response = await api.get("/logout").then(async (res: any) => {
+    const response = await api.get("/logout",{params:data}).then(async (res: any) => {
       if (res && res?.isSuccess) {
         localStorage.clear();
+        console.log(response);
         eraseCookie(storageKeys?.userName);
         return res;
       }

@@ -40,10 +40,14 @@ export const asyncGetProjectDetails = async (payload: any) => {
 };
 
 export const asyncDownload = async (payload: any) => {
+  const usrnme = readCookie(storageKeys.userName);
+  
+  const data = { usrnme: usrnme,fileName:payload };
+  console.log("pwd :>> ", data);
   try {
 
     const response = await api
-      .post("/getProjectDetails", payload)
+      .post("/download", data)
       .then(async (res: any) => {
         if (res && res?.isSuccess) {
           return res;
@@ -79,14 +83,40 @@ export const asyncgetTrailLog = async () => {
   }
 };
 
-let page='1';
 
-export const getState = () => {
-   return page;
-}
+export const asyncgetPackagesLog = async () => {
+ 
+  try {
+    const response = await api
+      .get("/getincominglLog",)
+      .then(async (res: any) => {
+        if (res && res?.isSuccess) {
+          console.log(res);
+          return res;
+        }
+      });
+    return response;
+  } catch (e: any) {
+    return e.message;
+  }
+};
 
-
-export const setState = (value:any) => {
-   page = value;
-  
-}
+export const asyncdeleteproject = async (payload:any) => {
+  const usrnme = readCookie(storageKeys.userName);
+ 
+  const data = { usrnme: usrnme ,code: payload};
+  console.log("pwd :>> ", data);
+  try {
+    const response = await api
+      .delete("/deleteProject?usrnme="+ usrnme +"&code="+payload, )
+      .then(async (res: any) => {
+        if (res && res?.isSuccess) {
+          console.log(res);
+          return res;
+        }
+      });
+    return response;
+  } catch (e: any) {
+    return e.message;
+  }
+};

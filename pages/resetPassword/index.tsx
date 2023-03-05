@@ -65,7 +65,7 @@ const ResetPassword = () => {
       console.log("response :>> ", response);
       if (response) {
         if (response?.data) {
-          router.push("/");
+          router.push("/login");
           return;
         }
         errorAlert(response?.data);
@@ -109,7 +109,7 @@ const ResetPassword = () => {
                 </div>
                 <div className="form-group">
                   <label>
-                    New Password <span>*</span>
+                    Enter New Password <span>*</span>
                   </label>
                   <input
                     type="password"

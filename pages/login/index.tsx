@@ -45,7 +45,7 @@ const LoginScreen = () => {
       if (response) {
         if (response?.data?.includes("has logged in Successfully")) {
           successAlert("Login successfully");
-          router.push("/");
+          router.push("/WelcomePage");
           return;
         }
         errorAlert(response?.data);
@@ -60,10 +60,10 @@ const LoginScreen = () => {
       <s.LoginMain>
         <div className="login-main">
           <div className="back-login">
-            <Link href="/">
+            {/* <Link href="/">
               <img src="assets/arrow-back.svg" alt="arrow-back"></img>
               <span>Back To Home</span>
-            </Link>
+            </Link> */}
           </div>
           <div className="login-left">
             <div className="login-left-inner">

@@ -30,6 +30,8 @@ const LandingScreen = () => {
       Router.push("/login");
       return;
     }
+
+    Router.push('/WelcomePage');
     const username = getUserName();
     setUsername(username);
   

@@ -8,6 +8,10 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Loader from '@/components/Loader';
+import { checkIsAuth, getUserName } from '@/utils/globalFunctions';
+import  Router  from 'next/router';
+import { asyncgetTrailLog } from '@/services/Api/Projects/projects.service';
+import { errorAlert } from '@/utils/alerts';
 
 
 interface Column {
@@ -103,11 +107,53 @@ function createData(
 
 
 export default function StickyHeadTable(props: any) {
+  const [trailData, settrailData] = React.useState<any>([]);
+    const dataFetchedRef = React.useRef(false);
+    const [username, setUsername] = React.useState("");
+    const [isempty,setisempty] = React.useState(false);
+  
+    const [isLoading, setIsLoading] = React.useState(false);
 
+    React.useEffect(() => {
+        if (!checkIsAuth()) {
+          Router.push('/login');
 
-    const rows = props.trailData.map((val: any) => {
-        console.log(val.description)
+          return;
+        }
+        const username = getUserName();
+        setUsername(username);
+        if (dataFetchedRef.current) return;
+        dataFetchedRef.current = true;
+       fetchtrails();
+      }, [trailData]);
+    
+      const fetchtrails = async () => {
+        setIsLoading(true);
+        const response = await asyncgetTrailLog();
+        setIsLoading(false);
+    
+        console.log("response: ", response);
+        if (response) {
+          if (response?.data) {
+            if(response.data.length === 0) {
+                setisempty(true);
+                return;
+            }
+            settrailData(response.data);
+            return;
 
+            
+          }
+          errorAlert(response);
+        }
+
+     
+      };
+
+   
+    const rows = trailData.map((val: any) => {
+    
+        console.log(props.isempty);
         return createData(val.code,val.date,val.desc,val.dur,val.emails,val.files,val.notify,val.time);
     })
 
@@ -130,8 +176,9 @@ export default function StickyHeadTable(props: any) {
     setPage(0);
   };
 
-  return (
-    <Paper sx={{ width: '100%', overflow: 'hidden'}}>
+  return  (
+    
+   <Paper sx={{ width: '100%', overflow: 'hidden'}}>
       <TableContainer sx={{ maxHeight: 440 ,  }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead >
@@ -179,8 +226,9 @@ export default function StickyHeadTable(props: any) {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-     
+     <Loader isLoading={isLoading} /> 
     </Paper>
+            
     
   );
 }

@@ -1,16 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-import * as s from "../styles/common.style";
+
 
 import Footer from "../components/layout/footer";
 
-import Head from "next/head";
-import { asyncLogout } from "@/services/auth/auth.service";
+
 import { useEffect, useRef, useState ,SyntheticEvent} from "react";
 
 import Router from "next/router";
 import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
-import { eraseCookie, readCookie } from "@/utils/cookieCreator";
-import { storageKeys } from "@/utils/constants";
+
 
 
 
@@ -18,7 +16,7 @@ import { storageKeys } from "@/utils/constants";
 
 
 import Header from "./Header/header";
-import WelcomePage from "./WelcomePage";
+
 
 
 const LandingScreen = () => {

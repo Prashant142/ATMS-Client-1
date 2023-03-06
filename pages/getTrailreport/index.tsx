@@ -66,7 +66,7 @@ const TrailLog = () => {
          </br>
          <div style={{marginBottom:"100px",marginLeft:'100px' , marginRight:'100px'}}>
 
-      {isempty? <h1 style={{color:'black'}}>No Record Found!!</h1> :<StickyHeadTable trailData={trailData}  isLoading = {isLoading}></StickyHeadTable>}  
+      <StickyHeadTable ></StickyHeadTable>
          </div>
         
          <Footer></Footer>

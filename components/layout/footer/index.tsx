@@ -14,7 +14,7 @@ const Footer = () => {
       <s.Footer>
         {/* <Sidebar /> */}
         <p>
-          Copyright © 2014 Wisecan Engineering Services Pte Ltd. All rights
+          Copyright © 2023 Wisecan Engineering Services Pte Ltd. All rights
           reserved.
         </p>
       </s.Footer>

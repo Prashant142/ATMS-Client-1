@@ -9,11 +9,12 @@ import { asyncLogout } from "@/services/auth/auth.service";
 import { useEffect, useRef, useState ,SyntheticEvent} from "react";
 
 import Router from "next/router";
-import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
+import { checkIsAuth, getUserName ,getisadminstatus} from "@/utils/globalFunctions";
 import { eraseCookie, readCookie } from "@/utils/cookieCreator";
 import { storageKeys } from "@/utils/constants";
 import WelcomePage from "../WelcomePage";
 import TrailLog from "../getTrailreport";
+
 
 let initialState = true;
 
@@ -23,8 +24,7 @@ const Header = () => {
     
   const [value , setvalue] = useState(1);
   const [username, setUsername] = useState("");
-
- 
+  const [isadmins,setisadmin] = useState(null);
   
  
   const changepage = (value:any) => {
@@ -52,6 +52,8 @@ const Header = () => {
    
 
   }
+
+  
  
   useEffect(() => {
     if (!checkIsAuth()) {
@@ -59,7 +61,13 @@ const Header = () => {
       return;
     }
     const username = getUserName();
+   
+    
     setUsername(username);
+
+    const isadmin = getisadminstatus();
+    console.log(isadmin);
+    setisadmin(isadmin);
    
   
   
@@ -109,11 +117,14 @@ const Header = () => {
          
               <table>
   <tbody>
-    <tr>
+ 
+  <tr>
       <td onClick={()=> changepage(1)}><p>Projects</p></td>
-      <td onClick={()=> changepage(2)}><p>Check Trail Report</p></td>
-      <td onClick={()=> changepage(3)}><p>Check Incoming Packages</p></td>
-    </tr>
+   {isadmins === "False" ? "" : <td onClick={()=> changepage(2)}><p>Check Trail Report</p></td>}
+    {isadmins === "False"? "" : <td onClick={()=> changepage(3)}><p>Check Incoming Packages</p></td>}
+    </tr> 
+
+   
   </tbody>
 </table>
              

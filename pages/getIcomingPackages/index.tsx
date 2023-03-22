@@ -63,7 +63,7 @@ const IcomingPackages = () => {
     
      {<Header></Header>}
      <s.HomeMain>
-     <h1 style={{color:'black',alignItems:'center',margin:'50px'}}>Icoming Logs</h1>
+     <h1 style={{color:'black',alignItems:'center',marginLeft:'100px' ,marginTop:'50px'}}>Incoming Logs</h1>
      {logsData.map((item:any,index:number)=> {
         return <tr key={index
         } style={{margin:'50px'}}><td>{item.code}</td><td>{item.date}</td>{item.desc}</tr>

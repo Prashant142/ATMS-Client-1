@@ -14,8 +14,19 @@ export const checkIsAuth = () => {
 
 export const getUserName = () => {
   let username: any = "";
+  
   if (typeof window !== "undefined") {
     username = readCookie(storageKeys.userName);
+    
   }
   return username;
 };
+
+export const getisadminstatus = () => {
+  let isadmin:any;
+  if(typeof window !== "undefined") {
+    isadmin = readCookie(storageKeys.isadmin);
+
+  }
+  return isadmin;
+}

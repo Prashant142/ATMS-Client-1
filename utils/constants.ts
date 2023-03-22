@@ -7,6 +7,7 @@ export const errorString = {
 export const localStorageKeys = {
   authKey: "token",
   userEmail: "user-email",
+ 
 };
 export const AUTH_COOKIE_EXPIRATION_TIME_IN_DAYS = 15;
 export const PAGINATION_DEFAULT_LIMIT = 10; // Freelancers list, jobs list
@@ -17,6 +18,7 @@ export const secureKeys = {
 export const storageKeys = {
   userName: "user-name",
   userPWDToken: "token-pwd",
+  isadmin:"isadmin-status",
 };
 
 export function getYear() {

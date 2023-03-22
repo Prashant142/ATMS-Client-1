@@ -7,7 +7,7 @@ import Footer from "../components/layout/footer";
 import { useEffect, useRef, useState ,SyntheticEvent} from "react";
 
 import Router from "next/router";
-import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
+import { checkIsAuth, getisadminstatus, getUserName } from "@/utils/globalFunctions";
 
 
 
@@ -34,6 +34,7 @@ const LandingScreen = () => {
     Router.push('/WelcomePage');
     const username = getUserName();
     setUsername(username);
+    getisadminstatus();
   
     // if (dataFetchedRef.current) return;
     // dataFetchedRef.current = true;

@@ -7,6 +7,9 @@ import { secureKeys } from "../../utils/constants";
 
 const api = new Api();
 
+
+
+
 export const asyncUserLogin = async (payload: any) => {
   try {
     const { usnme, pwd } = payload;
@@ -15,8 +18,12 @@ export const asyncUserLogin = async (payload: any) => {
     const response = await api
       .post("/signIn", params)
       .then(async (res: any) => {
-        if (res && res?.isSuccess) {
+     
+        if (res && res?.data.issuccess === true) {
+          console.log(res.data.issuccess);
+         
           createCookie(storageKeys.userName, usnme || "", 0);
+          createCookie(storageKeys.isadmin,res.data.is_admin|| "", 0);
           const encodedPassword = encodeData(
             pwd,
             secureKeys.secureUserPWDToken
@@ -24,9 +31,13 @@ export const asyncUserLogin = async (payload: any) => {
           createCookie(storageKeys.userPWDToken, encodedPassword, 0);
           return res;
         }
+        else  {
+          return res;
+        }
       });
     return response;
   } catch (e: any) {
+    console.log(e.message);
     return e.message;
   }
 };
@@ -39,8 +50,11 @@ export const asyncLogout = async () => {
     const response = await api.get("/logout",{params:data}).then(async (res: any) => {
       if (res && res?.isSuccess) {
         localStorage.clear();
-        console.log(response);
+        console.log(res);
         eraseCookie(storageKeys?.userName);
+        eraseCookie(storageKeys.isadmin);
+        eraseCookie(storageKeys.userPWDToken);
+        console.log('logout')
         return res;
       }
       return res;
@@ -48,6 +62,7 @@ export const asyncLogout = async () => {
     return response;
   } catch (e: any) {
     console.log(e.message);
+   
     localStorage.clear();
     return e.message;
   }

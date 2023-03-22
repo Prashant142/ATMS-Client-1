@@ -7,7 +7,7 @@ import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import { asyncdeleteproject, asyncGetAllProjects } from "@/services/Api/Projects/projects.service";
 import Router from "next/router";
-import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
+import { checkIsAuth, getisadminstatus, getUserName } from "@/utils/globalFunctions";
 
 import { errorAlert, successAlert } from "@/utils/alerts";
 import Loader from "@/components/Loader";
@@ -26,6 +26,7 @@ const WelcomePage = () => {
     const [username, setUsername] = useState("");
   
     const [isLoading, setIsLoading] = useState(false);
+    const [isadmins , setisadmin] = useState(null);
 
     useEffect(() => {
         if (!checkIsAuth()) {
@@ -34,6 +35,8 @@ const WelcomePage = () => {
         }
         const username = getUserName();
         setUsername(username);
+        const isadmin = getisadminstatus();
+        setisadmin(isadmin);
         if (dataFetchedRef.current) return;
         dataFetchedRef.current = true;
         fetchProjects();
@@ -127,12 +130,12 @@ const WelcomePage = () => {
                             alt="eye-outline"
                           ></img>
                         </Link>
-                        <Link href="" onClick={() => handledeleteProject(item?.code)}>
+                      {isadmins === 'True' ? <Link href="" onClick={() => handledeleteProject(item?.code)}>
                           <img
                             src="assets/trash-outline.svg"
                             alt="trash-outline"
                           ></img>
-                        </Link>
+                        </Link> :null} 
                       </div>
                     </div>
                   );

@@ -43,12 +43,13 @@ const LoginScreen = () => {
       const response = await asyncUserLogin({ usnme, pwd });
       setIsLoading(false);
       if (response) {
-        if (response?.data?.includes("has logged in Successfully")) {
+        console.log(response);
+        if (response?.data?.msg.includes("has logged in Successfully")) {
           successAlert("Login successfully");
           router.push("/WelcomePage");
           return;
         }
-        errorAlert(response?.data);
+        errorAlert(response?.data.msg);
       }
       // console.log("response :>> ", response);
     }

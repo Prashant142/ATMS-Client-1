@@ -88,6 +88,7 @@ const DeleteProjects = () => {
 
 
   const fetchProjectDetails = async (date: any) => {
+
     const params = {
       p_code: queryData?.code,
       p_name: queryData?.p_name,

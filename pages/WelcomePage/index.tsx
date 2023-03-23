@@ -58,11 +58,12 @@ const WelcomePage = () => {
 
 
       const handleOnClickViewProject = (data: any) => {
+        console.log(data);
         if (data) {
           Router.push({
             pathname: "/deleteprojects",
             query: { p_name: data?.p_name, code: data?.code },
-          });
+          },);
         }
       };
 
@@ -122,7 +123,7 @@ const WelcomePage = () => {
                       </div>
                       <div className="projects-link">
                         <Link
-                          href="/deleteprojects"
+                          href=''
                           onClick={() => handleOnClickViewProject(item)}
                         >
                           <img

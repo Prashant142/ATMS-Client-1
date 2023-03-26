@@ -122,21 +122,21 @@ const WelcomePage = () => {
                         <h5>{item?.p_name}</h5>
                       </div>
                       <div className="projects-link">
-                        <Link
-                          href=''
+                        <button
+                         
                           onClick={() => handleOnClickViewProject(item)}
                         >
                           <img
                             src="assets/eye-outline.svg"
                             alt="eye-outline"
                           ></img>
-                        </Link>
-                      {isadmins === 'True' ? <Link href="" onClick={() => handledeleteProject(item?.code)}>
+                        </button>
+                      {isadmins === 'True' ? <button   onClick={() => handledeleteProject(item?.code)}>
                           <img
                             src="assets/trash-outline.svg"
                             alt="trash-outline"
                           ></img>
-                        </Link> :null} 
+                        </button> :null} 
                       </div>
                     </div>
                   );

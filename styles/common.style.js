@@ -479,8 +479,9 @@ export const HomeMain = styled.div`
           }
           .projects-link {
             display: flex;
-            a {
+            button {
               display: flex;
+              background-color: white;
               align-items: center;
               justify-content: center;
               width: 48px;
@@ -492,6 +493,13 @@ export const HomeMain = styled.div`
               &:last-child {
                 border-color: #e6813f;
               }
+            
+             
+
+            }
+            button:hover {
+              cursor: pointer;
+              background-color:#e3e1fa
             }
           }
         }

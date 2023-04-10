@@ -8,6 +8,7 @@ import Router, { useRouter } from "next/router";
 import {
   asyncDownload,
   asyncGetProjectDetails,
+  asyncgetdates,
 } from "@/services/Api/Projects/projects.service";
 import { eraseCookie, readCookie } from "@/utils/cookieCreator";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -25,9 +26,9 @@ import { asyncLogout } from "@/services/auth/auth.service";
 import Header from "../Header/header";
 
 const addProjectValidationSchema = yup.object({
-  startDay: yup.number().required("Start date is required"),
-  startMonth: yup.number().required("Start date is required"),
-  startYear: yup.number().required("Start date is required"),
+  startDay: yup.string().required("Start date is required"),
+  startMonth: yup.string().required("Start date is required"),
+  startYear: yup.string().required("Start date is required"),
 });
 
 const DeleteProjects = () => {
@@ -40,6 +41,11 @@ const DeleteProjects = () => {
   const [filesData, setFilesData] = useState<any>([]);
   const router = useRouter();
   const [username, setUsername] = useState("");
+  const [dates,setdates] = useState([]);
+  const [days,setdays] = useState([]);
+  const [months,setmonths] = useState([]);
+  const [years , setyears] = useState([]);
+  
   const {
     register,
     handleSubmit,
@@ -58,6 +64,8 @@ const DeleteProjects = () => {
 
     const username = getUserName();
     setUsername(username);
+  
+    
   }, []);
   useEffect(() => {
     if (router?.query && router?.query?.code && router?.query?.p_name) {
@@ -65,7 +73,14 @@ const DeleteProjects = () => {
         code: router?.query?.code,
         p_name: router?.query?.p_name,
       });
+      getprojectsdates();
+    
+     
+      
+     
     }
+
+  
   }, [router]);
 
   const handleSignOut = async (e: any) => {
@@ -81,6 +96,7 @@ const DeleteProjects = () => {
   };
 
   const [values, setValues] = useState('');
+  const [checked, setChecked] = useState(Array([]));
   const handlechange = (event: SyntheticEvent, newValue: string) => {
 
     setValues(newValue);
@@ -90,10 +106,11 @@ const DeleteProjects = () => {
   const fetchProjectDetails = async (date: any) => {
 
     const params = {
-      p_code: queryData?.code,
-      p_name: queryData?.p_name,
+      p_code: router?.query?.code,
+      p_name: router?.query?.p_name,
       date: date,
     };
+    
     console.log(params);
     const response = await asyncGetProjectDetails(params);
     if (response && response?.data) {
@@ -122,20 +139,65 @@ const DeleteProjects = () => {
     }
   };
 
+    const getprojectsdates =  async () => {
+ 
+
+     
+      const response = await asyncgetdates(router?.query?.code);
+    if (response || response?.data) {
+      if (typeof response?.data !== "string") {
+        console.log(response);
+        setdays(response['days']);
+        setyears(response['years']);
+        setmonths(response['months']);
+        fetchProjectDetails(response['latestdate'])
+        console.log(response['latestdate'])
+       
+     
+      } else {
+        errorAlert(response?.data);
+      }
+    }
+    }
+
+    
+      
+      
+ 
+ 
+
+
   const onSubmitProduct = (data: any) => {
+    console.log(data);
     const { startDay, startMonth, startYear } = data;
     let start_date = startDay + "-" + startMonth + "-" + startYear;
-    const isStartDateValid = moment(start_date, "DD-M-YYYY").isValid();
-    if (!isStartDateValid) {
-      setError("invalidStartDate", {
-        message: "Please enter valid start date",
-      });
-      return;
-    }
-    const date = moment(start_date, "D-M-YYYY").format("D-MMM-YYYY");
-    fetchProjectDetails(date);
-    console.log("data :>> ", data, date);
+    console.log(start_date);
+    // const isStartDateValid = moment(start_date, "DD-M-YYYY").isValid();
+    // if (!isStartDateValid) {
+    //   setError("invalidStartDate", {
+    //     message: "Please enter valid start date",
+    //   });
+    //   return;
+    // }
+    // const date = moment(start_date, "D-M-YYYY").format("D-MMM-YYYY");
+    fetchProjectDetails(start_date);
+    console.log("data :>> ", data, start_date);
   };
+
+  const handleChecked = (e:any, index:any) => {
+    console.log("hit", index);
+    let prev = checked;
+    let itemIndex = prev.indexOf(index);
+    if (itemIndex !== -1) {
+      prev.splice(itemIndex, 1);
+    } else {
+      prev.push(index);
+    }
+    setChecked([...prev]);
+    console.log(checked);
+  };
+
+
 
   return (
     <>
@@ -149,50 +211,59 @@ const DeleteProjects = () => {
             </div>
             <form onSubmit={handleSubmit(onSubmitProduct)}>
               <div className="select-custom-block">
-                <select
-                  placeholder="Day"
-                  {...register("startDay", { required: true })}
+                <select 
+                  defaultValue={days[0]}
+                  {...register("startDay", { required: false })}
                 >
-                  <option selected disabled>
-                    Day
-                  </option>
-                  {DAYS.map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  ))}
+                  
+                 {days.map((value) => {
+                   
+                 
+                     return    <option key={value} value={(value)}>
+                        {(value)}
+                      </option>
+                  }                    
+                 
+                  )}
                 </select>
-                <select {...register("startMonth", { required: true })}>
-                  <option selected disabled>
-                    Month
-                  </option>
-                  {MONTHS.map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  ))}
+                <select  defaultValue={months[0]}  value={months[0]} {...register("startMonth", { required: true })}>
+              
+                  {months.map((value,index) => {
+                    
+                 
+                     return    <option key={value} value={value}>
+                        {value}
+                      </option>
+                  }                    
+                 
+                  )}
                 </select>
-                <select {...register("startYear", { required: true })}>
-                  <option selected disabled>
-                    Year
-                  </option>
-                  {YEARS.map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  ))}
+                <select defaultValue={years[0]} {...register("startYear", { required: false })}>
+                 
+                {years.map((value:number,index) => {
+                    
+                      
+                 
+                 
+                 
+                     return    <option key={value} value={(value)}>
+                        {(value)}
+                      </option>
+                  }                    
+                 
+                  )}
                 </select>
                 {(errors?.startDay ||
                   errors?.startMonth ||
-                  errors?.startYear ||
-                  errors?.invalidStartDate) && (
+                  errors?.startYear
+  ) && (
                     <s.ErrorMessageBlock>
                       Please enter valid start date
                     </s.ErrorMessageBlock>
                   )}
                 <div className="common-form-block-inner">
                   <div className="last-btn">
-                    <button type="submit" className="btn common-button-yellow">
+                    <button type="submit" className="btn common-button-yellow" value="Submit" >
                       Submit
                     </button>
                    
@@ -205,17 +276,17 @@ const DeleteProjects = () => {
               <table>
                 <thead>
                   <tr>
-                    
+                    <th></th>
                     <th>Files name</th>
                     <th>Time</th>
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {filesData?.map((item: any, index: number) => {
+                 <tbody>
+               {filesData?.map((item: any, index:number) => {
                     return (
                       <tr key={index}>
-                       
+                        <td> <input style={ {accentColor:'red' , width:"15px" , height:"15px"}} type="checkbox"  onChange={(e) => handleChecked(e, index)} /> </td>
                         <td>
                           <div className="pdf-block">
                             <img
@@ -227,6 +298,7 @@ const DeleteProjects = () => {
                         </td>
                         <td>{item?.time}</td>
                         <td>
+                          <td>
                           <div className="action-block">
                             <Link
                               href={item?.filepath}
@@ -234,17 +306,32 @@ const DeleteProjects = () => {
                               onClick={() => handleOnClickDownload(item)}
                             >
                               <img
+                                
                                 src="assets/download-icon.svg"
                                 alt="download-icon"
                               ></img>
                             </Link>
 
                           </div>
+                            </td> 
+
+                            <td>
+                          <div className="projects-link">
+                          <button style={{backgroundColor:'white' , border:"none" , padding:"2px"}}>
+                          <img
+                            src="assets/trash-outline.svg"
+                            alt="trash-outline"
+                          ></img>
+                        </button>
+                            </div> 
+                            </td>
                         </td>
                       </tr>
                     );
                   })}
+                
                 </tbody>
+
               </table>
 
             </s.TableCommon>}

@@ -64,11 +64,14 @@ const IcomingPackages = () => {
      {<Header></Header>}
      <s.HomeMain>
      <h1 style={{color:'black',alignItems:'center',marginLeft:'100px' ,marginTop:'50px'}}>Incoming Logs</h1>
-     {logsData.map((item:any,index:number)=> {
-        return <tr key={index
-        } style={{margin:'50px'}}><td>{item.code}</td><td>{item.date}</td>{item.desc}</tr>
-     })}
+     
 </s.HomeMain>
+{logsData.map((item:any,index:number)=> {
+        return <div style={{paddingLeft:"60px" , paddingTop:"25px"}}>
+<tr key={index
+        } style={{ color:'black' , justifyContent:"space-between"}}><td>{item.code}</td><td>{item.date}</td>{item.desc}</tr>
+        </div> 
+     })}
      </>
     );
 

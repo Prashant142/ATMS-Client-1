@@ -39,6 +39,36 @@ export const asyncGetProjectDetails = async (payload: any) => {
   }
 };
 
+export const asyncgetdates =async (payload:any) => {
+  const data = {
+    p_code:payload
+  }
+  console.log(data);
+  try {
+    const response = await api
+      .get("/getProjectDates",{params:data})
+      .then(async (res: any) => {
+        if (res && res?.isSuccess) {
+          console.log(res.data);
+        const years =   Array.from( new Set(res.data.map((val: { [x: string]: any; }) => val['year'])));
+        const days =   Array.from( new Set(res.data.map((val: { [x: string]: any; }) => val['day'])))
+        const months =   Array.from( new Set(res.data.map((val: { [x: string]: any; }) => val['month'])))
+        const dates = {
+          days: days,
+          months:months,
+          years:years,
+          latestdate:days[0] + '-' + months[0] + '-' + years[0]
+        }
+          return dates;
+        }
+      });
+    return response;
+  } catch (e: any) {
+    return e.message;
+  }
+}
+
+
 export const asyncDownload = async (payload: any) => {
   const usrnme = readCookie(storageKeys.userName);
   
@@ -120,3 +150,5 @@ export const asyncdeleteproject = async (payload:any) => {
     return e.message;
   }
 };
+
+

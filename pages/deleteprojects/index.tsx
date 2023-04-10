@@ -9,6 +9,7 @@ import {
   asyncDownload,
   asyncGetProjectDetails,
   asyncgetdates,
+
 } from "@/services/Api/Projects/projects.service";
 import { eraseCookie, readCookie } from "@/utils/cookieCreator";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -316,8 +317,9 @@ const DeleteProjects = () => {
                             </td> 
 
                             <td>
-                          <div className="projects-link">
-                          <button style={{backgroundColor:'white' , border:"none" , padding:"2px"}}>
+                          <div className="projects-link"> //delete button
+                          <button style={{backgroundColor:'white' , border:"none" , padding:"2px"}}> 
+                        
                           <img
                             src="assets/trash-outline.svg"
                             alt="trash-outline"

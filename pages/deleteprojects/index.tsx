@@ -9,6 +9,7 @@ import {
   asyncDownload,
   asyncGetProjectDetails,
   asyncgetdates,
+  asyncdeleteSelectedproject,
 
 } from "@/services/Api/Projects/projects.service";
 import { eraseCookie, readCookie } from "@/utils/cookieCreator";
@@ -46,6 +47,9 @@ const DeleteProjects = () => {
   const [days,setdays] = useState([]);
   const [months,setmonths] = useState([]);
   const [years , setyears] = useState([]);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [date, setDate] = useState();
+  const [store, setStore] = useState([]);
   
   const {
     register,
@@ -75,9 +79,6 @@ const DeleteProjects = () => {
         p_name: router?.query?.p_name,
       });
       getprojectsdates();
-    
-     
-      
      
     }
 
@@ -97,7 +98,7 @@ const DeleteProjects = () => {
   };
 
   const [values, setValues] = useState('');
-  const [checked, setChecked] = useState(Array([]));
+  const [checked, setChecked] = useState([]);
   const handlechange = (event: SyntheticEvent, newValue: string) => {
 
     setValues(newValue);
@@ -153,6 +154,7 @@ const DeleteProjects = () => {
         setmonths(response['months']);
         fetchProjectDetails(response['latestdate'])
         console.log(response['latestdate'])
+        setDate(response['latestdate']);
        
      
       } else {
@@ -160,11 +162,6 @@ const DeleteProjects = () => {
       }
     }
     }
-
-    
-      
-      
- 
  
 
 
@@ -172,7 +169,8 @@ const DeleteProjects = () => {
     console.log(data);
     const { startDay, startMonth, startYear } = data;
     let start_date = startDay + "-" + startMonth + "-" + startYear;
-    console.log(start_date);
+    console.log("abs");
+    setDate(start_date);
     // const isStartDateValid = moment(start_date, "DD-M-YYYY").isValid();
     // if (!isStartDateValid) {
     //   setError("invalidStartDate", {
@@ -185,18 +183,54 @@ const DeleteProjects = () => {
     console.log("data :>> ", data, start_date);
   };
 
-  const handleChecked = (e:any, index:any) => {
+  const handleChecked = (e: any, index: any) => {
     console.log("hit", index);
-    let prev = checked;
-    let itemIndex = prev.indexOf(index);
-    if (itemIndex !== -1) {
-      prev.splice(itemIndex, 1);
-    } else {
-      prev.push(index);
-    }
-    setChecked([...prev]);
+  
+    setChecked((prevCheckedItems) => {
+      const itemIndex = prevCheckedItems.indexOf(index);
+  
+      if (itemIndex !== -1) {
+        // Remove the index from the array if it exists
+        return prevCheckedItems.filter((item) => item !== index);
+      } else {
+        // Add the index to the array if it doesn't exist
+        return [...prevCheckedItems, index];
+      }
+    });
+  
     console.log(checked);
   };
+
+  const handleDelete = (item) => {
+    const getCheckedFilesData = (checked, filesData) => {
+      const output = [];
+    
+      checked.forEach((index) => {
+        if (index >= 0 && index < filesData.length) {
+          output.push(filesData[index]);
+        }
+      });
+    
+      return output;
+    };
+
+    const filesToDelete = getCheckedFilesData(checked, filesData)
+    filesToDelete.forEach((file, index) => {
+      const payload = {
+        fid: item, // use the omngodb id here
+        code: router.query.code, // use the omngodb id here
+        date: date, // use the omngodb id here
+      }
+      
+      //  Use file name to get id from mongo db
+       console.log(payload);
+       setStore(store.push(payload))
+       
+       asyncdeleteSelectedproject(store)
+      
+    });
+    console.log(filesToDelete)
+  }
 
 
 
@@ -269,7 +303,6 @@ const DeleteProjects = () => {
                     </button>
                    
                   </div>
-                  
                 </div>
               </div>
             </form>
@@ -317,8 +350,9 @@ const DeleteProjects = () => {
                             </td> 
 
                             <td>
-                          <div className="projects-link"> //delete button
-                          <button style={{backgroundColor:'white' , border:"none" , padding:"2px"}}> 
+                          <div className="projects-link">
+                          {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
+                          <button onClick={() => handleDelete(item.fid)} style={{backgroundColor:'white' , border:"none" , padding:"2px"}}> 
                         
                           <img
                             src="assets/trash-outline.svg"

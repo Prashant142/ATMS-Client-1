@@ -151,21 +151,18 @@ export const asyncdeleteproject = async (payload:any) => {
   }
 };
 
-export const asyncdeleteSelectedproject = async (payload:any) => {
-  
-  // payload = JSON.stringify(payload)
-  console.log(payload)
 
-  const store={
-    data:payload
-  }
 
-  // console.log(data)
+
+export const asyncdeltefiles = async (payload: any) => {
+
+  //  const store = {
+  //   data: payload
+   
 
   try {
-    const indexes = payload.map((item: number) => (item));
     const response = await api
-    .delete("/deleteProjectDetails",{params: store} )
+      .delete("/deleteProjectDetails?data="+JSON.stringify(payload), )
       .then(async (res: any) => {
         if (res && res?.isSuccess) {
           console.log(res);
@@ -177,5 +174,3 @@ export const asyncdeleteSelectedproject = async (payload:any) => {
     return e.message;
   }
 };
-
-

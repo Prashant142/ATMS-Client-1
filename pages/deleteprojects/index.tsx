@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import * as s from "../../styles/common.style"
+import React from "react";
 
 import Footer from "@/components/layout/footer";
 import { DAYS, MONTHS, storageKeys, YEARS } from "@/utils/constants";
@@ -9,12 +10,13 @@ import {
   asyncDownload,
   asyncGetProjectDetails,
   asyncgetdates,
-  asyncdeleteSelectedproject,
+
+  asyncdeltefiles,
 
 } from "@/services/Api/Projects/projects.service";
 import { eraseCookie, readCookie } from "@/utils/cookieCreator";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { errorAlert } from "@/utils/alerts";
+import { Component, SyntheticEvent, useEffect, useState } from "react";
+import { errorAlert,successAlert } from "@/utils/alerts";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -48,8 +50,8 @@ const DeleteProjects = () => {
   const [months,setmonths] = useState([]);
   const [years , setyears] = useState([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [date, setDate] = useState();
-  const [store, setStore] = useState([]);
+  const [date, setDate] = useState("");
+  const [store, setStore] = useState<any> ([]);
   
   const {
     register,
@@ -183,53 +185,97 @@ const DeleteProjects = () => {
     console.log("data :>> ", data, start_date);
   };
 
-  const handleChecked = (e: any, index: any) => {
-    console.log("hit", index);
-  
-    setChecked((prevCheckedItems) => {
-      const itemIndex = prevCheckedItems.indexOf(index);
-  
-      if (itemIndex !== -1) {
-        // Remove the index from the array if it exists
-        return prevCheckedItems.filter((item) => item !== index);
-      } else {
-        // Add the index to the array if it doesn't exist
-        return [...prevCheckedItems, index];
-      }
+  const handleChecked = (item:any) => {
+    const data = {
+      fid:item,
+      code:router.query.code,
+      date:date
+    }
+     
+    console.log("hit", item);
+    const prev= store;
+    const found = prev.find((obj: { fid: any; }) => {
+      return obj.fid === item;
     });
+
+    console.log(found)
+
+    if(found === undefined) {
+        prev.push(data);
+    }
+
+    else {
+        
+       const index =prev.indexOf(found);
+       prev.splice(index, 1);
+       
+       
+
+    }
+    console.log(prev);
+    setStore(prev);
+    // setChecked((prevCheckedItems) => {
+    //   const itemIndex = prevCheckedItems.indexOf(index);
+  
+    //   if (itemIndex !== -1) {
+    //     // Remove the index from the array if it exists
+    //     return prevCheckedItems.filter((item) => item !== index);
+    //   } else {
+    //     // Add the index to the array if it doesn't exist
+    //     return [...prevCheckedItems, index];
+    //   }
+    // });
   
     console.log(checked);
   };
 
-  const handleDelete = (item) => {
-    const getCheckedFilesData = (checked, filesData) => {
-      const output = [];
-    
-      checked.forEach((index) => {
-        if (index >= 0 && index < filesData.length) {
-          output.push(filesData[index]);
-        }
-      });
-    
-      return output;
-    };
 
-    const filesToDelete = getCheckedFilesData(checked, filesData)
-    filesToDelete.forEach((file, index) => {
+ 
+
+
+  const handleDelete = async (item: any) => {
+    // const getCheckedFilesData = (checked, filesData) => {
+    //   const output = [];
+    
+    //   checked.forEach((index) => {
+    //     if (index >= 0 && index < filesData.length) {
+    //       output.push(filesData[index]);
+    //     }
+    //   });
+    
+    //   return output;
+    // };
+    if(store.length ===0) {
       const payload = {
-        fid: item, // use the omngodb id here
-        code: router.query.code, // use the omngodb id here
-        date: date, // use the omngodb id here
+        fid: item, 
+        code: router.query.code, 
+        date: date, 
       }
       
       //  Use file name to get id from mongo db
        console.log(payload);
-       setStore(store.push(payload))
-       
-       asyncdeleteSelectedproject(store)
       
-    });
-    console.log(filesToDelete)
+      //  const storearray = [];
+      //  storearray.push(payload);
+  
+        store.push(payload);
+    }
+   
+     const response = await asyncdeltefiles(store);
+     if (response && response?.data) {
+       if (typeof response?.data !== "string") {
+         console.log(response.data);
+        
+       } else {
+
+         successAlert(response?.data);
+         setStore([]);
+         window.location.reload();
+       }
+     }
+
+   
+ 
   }
 
 
@@ -320,7 +366,7 @@ const DeleteProjects = () => {
                {filesData?.map((item: any, index:number) => {
                     return (
                       <tr key={index}>
-                        <td> <input style={ {accentColor:'red' , width:"15px" , height:"15px"}} type="checkbox"  onChange={(e) => handleChecked(e, index)} /> </td>
+                        <td> <input style={ {accentColor:'red' , width:"15px" , height:"15px"}} type="checkbox"     onChange={()=> handleChecked(item.fid)} /> </td>
                         <td>
                           <div className="pdf-block">
                             <img

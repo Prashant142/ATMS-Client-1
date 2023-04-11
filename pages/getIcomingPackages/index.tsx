@@ -67,7 +67,7 @@ const IcomingPackages = () => {
      
 </s.HomeMain>
 {logsData.map((item:any,index:number)=> {
-        return <div style={{paddingLeft:"60px" , paddingTop:"25px"}}>
+        return <div  key={index} style={{paddingLeft:"60px" , paddingTop:"25px"}}>
 <tr key={index} style={{ color:'black' , justifyContent:"space-between"}}><td>{item.code}</td><td>{item.date}</td>{item.desc}</tr>
         </div> 
      })}

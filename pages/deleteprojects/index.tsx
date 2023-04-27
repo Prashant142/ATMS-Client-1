@@ -258,10 +258,10 @@ const DeleteProjects = () => {
                 <select
                   defaultValue={days[0]}
                   {...register("startDay", { required: false })}>
-                  {days.map((value: number) => {
+                  {days.map((value) => {
                     return (
                       <>
-                        <option>Select Days</option>
+                        <option>Set Days</option>
                         <option key={value} value={value}>
                           {value}
                         </option>
@@ -271,12 +271,11 @@ const DeleteProjects = () => {
                 </select>
                 <select
                   defaultValue={months[0]}
-                  // value={months[0]} .
                   {...register("startMonth", { required: false })}>
-                  {months.map((value: string, index) => {
+                  {months.map((value) => {
                     return (
                       <>
-                        <option>Select Month</option>
+                        <option>Set Months</option>
                         <option key={value} value={value}>
                           {value}
                         </option>
@@ -290,7 +289,7 @@ const DeleteProjects = () => {
                   {years.map((value: number, index) => {
                     return (
                       <>
-                        <option>Select Years</option>
+                        <option>Set Years</option>
                         <option key={value} value={value}>
                           {value}
                         </option>

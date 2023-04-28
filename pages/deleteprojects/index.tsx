@@ -243,119 +243,115 @@ const DeleteProjects = () => {
       }
     }
   };
+  console.log("This is the fileData", filesData);
 
   return (
     <>
       <s.HomeMain>
         {<Header></Header>}
-        <div className="welcome-block">
-          <div className="container">
-            <div className="projects-img-main">
-              <h5>{queryData?.p_name}</h5>
-            </div>
-            <form onSubmit={handleSubmit(onSubmitProduct)}>
-              <div className="select-custom-block">
-                <select
-                  defaultValue={days[0]}
-                  {...register("startDay", { required: false })}>
-                  {days.map((value) => {
-                    return (
-                      <>
-                        <option>Set Days</option>
+        {filesData.length > 0 ? (
+          <div className="welcome-block">
+            <div className="container">
+              <div className="projects-img-main">
+                <h5>{queryData?.p_name}</h5>
+              </div>
+              <form onSubmit={handleSubmit(onSubmitProduct)}>
+                <div className="select-custom-block">
+                  <select
+                    defaultValue={days[0]}
+                    {...register("startDay", { required: false })}>
+                    {days.map((value) => {
+                      return (
                         <option key={value} value={value}>
                           {value}
                         </option>
-                      </>
-                    );
-                  })}
-                </select>
-                <select
-                  defaultValue={months[0]}
-                  {...register("startMonth", { required: false })}>
-                  {months.map((value) => {
-                    return (
-                      <>
-                        <option>Set Months</option>
+                      );
+                    })}
+                  </select>
+                  <select
+                    defaultValue={months[0]}
+                    {...register("startMonth", { required: false })}>
+                    {months.map((value) => {
+                      return (
                         <option key={value} value={value}>
                           {value}
                         </option>
-                      </>
-                    );
-                  })}
-                </select>
-                <select
-                  defaultValue={years[0]}
-                  {...register("startYear", { required: false })}>
-                  {years.map((value: number, index) => {
-                    return (
-                      <>
-                        <option>Set Years</option>
+                      );
+                    })}
+                  </select>
+                  <select
+                    defaultValue={years[0]}
+                    {...register("startYear", { required: false })}>
+                    {years.map((value: number, index) => {
+                      return (
                         <option key={value} value={value}>
                           {value}
                         </option>
-                      </>
-                    );
-                  })}
-                </select>
-                {(errors?.startDay ||
-                  errors?.startMonth ||
-                  errors?.startYear) && (
-                  <s.ErrorMessageBlock>
-                    Please enter valid start date
-                  </s.ErrorMessageBlock>
-                )}
-                <div className="common-form-block-inner">
-                  <div className="last-btn">
-                    <button
-                      type="submit"
-                      className="btn common-button-yellow"
-                      value="Submit">
-                      Submit
-                    </button>
+                      );
+                    })}
+                  </select>
+                  {(errors?.startDay ||
+                    errors?.startMonth ||
+                    errors?.startYear) && (
+                    <s.ErrorMessageBlock>
+                      Please enter valid start date
+                    </s.ErrorMessageBlock>
+                  )}
+                  <div className="common-form-block-inner">
+                    <div className="last-btn">
+                      <button
+                        type="submit"
+                        className="btn common-button-yellow"
+                        value="Submit">
+                        Submit
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </form>
-            {filesData[0]?.err ? (
-              <h1 style={{ color: "black" }}>{filesData[0].err}</h1>
-            ) : (
-              <s.TableCommon>
-                <table>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Files name</th>
-                      <th>Time</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filesData?.map((item: any, index: number) => {
-                      return (
-                        <tr key={index}>
-                          <td>
-                            {" "}
-                            <input
-                              style={{
-                                accentColor: "red",
-                                width: "15px",
-                                height: "15px",
-                              }}
-                              type="checkbox"
-                              onChange={() => handleChecked(item.fid)}
-                            />{" "}
-                          </td>
-                          <td>
-                            <div className="pdf-block">
-                              <img
-                                src="assets/file-icon.svg"
-                                alt="file-icon"></img>
-                              <h4>{item?.filename}</h4>
-                            </div>
-                          </td>
-                          <td>{item?.time}</td>
-                          <td>
+              </form>
+              {filesData[0]?.err ? (
+                <h1 style={{ color: "darkgray" }}>{filesData[0].err}</h1>
+              ) : (
+                <s.TableCommon>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Files name</th>
+                        <th>Time</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filesData?.map((item: any, index: number) => {
+                        return (
+                          <tr key={index}>
                             <td>
+                              {" "}
+                              <input
+                                style={{
+                                  accentColor: "red",
+                                  width: "15px",
+                                  height: "15px",
+                                }}
+                                type="checkbox"
+                                onChange={() => handleChecked(item.fid)}
+                              />{" "}
+                            </td>
+                            <td>
+                              <div className="pdf-block">
+                                <img
+                                  src="assets/file-icon.svg"
+                                  alt="file-icon"></img>
+                                {/* <h4>{item?.filename}</h4> */}
+                              </div>
+                            </td>
+                            <td>{item?.time}</td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}>
                               <div className="action-block">
                                 <Link
                                   href={item?.filepath}
@@ -366,9 +362,7 @@ const DeleteProjects = () => {
                                     alt="download-icon"></img>
                                 </Link>
                               </div>
-                            </td>
 
-                            <td>
                               <div className="projects-link">
                                 {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
                                 <button
@@ -384,16 +378,32 @@ const DeleteProjects = () => {
                                 </button>
                               </div>
                             </td>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </s.TableCommon>
-            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </s.TableCommon>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "67vh",
+            }}>
+            <h2
+              style={{
+                color: "darkgray",
+                fontSize: "3rem",
+              }}>
+              No Data Found!
+            </h2>
+          </div>
+        )}
       </s.HomeMain>
       <Footer />
     </>

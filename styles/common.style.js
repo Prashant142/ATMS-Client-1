@@ -203,13 +203,11 @@ export const Footer = styled.div`
   background: #031971;
   padding: 32px;
   text-align: center;
-  margin-top:auto;
-  
+  margin-top: auto;
+
   left: 0;
   bottom: 0;
   width: 100%;
-
-  
 
   p {
     font-weight: 400;
@@ -217,8 +215,6 @@ export const Footer = styled.div`
     line-height: 17px;
     letter-spacing: 0.01em;
     color: #ffffff;
-   
-    
   }
 `;
 
@@ -302,14 +298,11 @@ export const Header = styled.div`
 
 export const HomeMain = styled.div`
   font-family: "Inter", sans-serif;
-       
-       
+
   .top-home-block {
     background-color: #000;
     padding-top: 56px;
     font-family: "Inter", sans-serif;
-     
-        
 
     .title-block {
       padding-bottom: 45px;
@@ -341,7 +334,7 @@ export const HomeMain = styled.div`
           text-align: center;
           letter-spacing: 0.01em;
           color: #ffffff;
-          cursor:pointer;
+          cursor: pointer;
           padding: 7px 10px 15px;
           &:before {
             content: "";
@@ -353,8 +346,6 @@ export const HomeMain = styled.div`
             width: 100%;
             height: 5px;
           }
-
-       
         }
       }
       .profile-block {
@@ -394,7 +385,7 @@ export const HomeMain = styled.div`
     }
   }
   .welcome-block {
-    padding: 70px 0px 120px;
+    padding: 70px 0px 38vh;
     .welcome-block-inner {
       margin-bottom: 50px;
       h3 {
@@ -493,13 +484,10 @@ export const HomeMain = styled.div`
               &:last-child {
                 border-color: #e6813f;
               }
-            
-             
-
             }
             button:hover {
               cursor: pointer;
-              background-color:#e3e1fa
+              background-color: #e3e1fa;
             }
           }
         }

@@ -5,95 +5,90 @@ import Link from "next/link";
 import Head from "next/head";
 
 import { useEffect, useRef, useState } from "react";
-import { asyncdeleteproject, asyncGetAllProjects } from "@/services/Api/Projects/projects.service";
+import {
+  asyncdeleteproject,
+  asyncGetAllProjects,
+} from "@/services/Api/Projects/projects.service";
 import Router from "next/router";
-import { checkIsAuth, getisadminstatus, getUserName } from "@/utils/globalFunctions";
+import {
+  checkIsAuth,
+  getisadminstatus,
+  getUserName,
+} from "@/utils/globalFunctions";
 
 import { errorAlert, successAlert } from "@/utils/alerts";
 import Loader from "@/components/Loader";
 import Header from "../Header/header";
 import Footer from "@/components/layout/footer";
 
-
-
-
-
-
-
 const WelcomePage = () => {
-    const [projectsData, setProjectsData] = useState<any>([]);
-    const dataFetchedRef = useRef(false);
-    const [username, setUsername] = useState("");
-  
-    const [isLoading, setIsLoading] = useState(false);
-    const [isadmins , setisadmin] = useState(null);
+  const [projectsData, setProjectsData] = useState<any>([]);
+  const dataFetchedRef = useRef(false);
+  const [username, setUsername] = useState("");
 
-    useEffect(() => {
-        if (!checkIsAuth()) {
-          Router.push("/login");
-          return;
-        }
-        const username = getUserName();
-        setUsername(username);
-        const isadmin = getisadminstatus();
-        setisadmin(isadmin);
-        if (dataFetchedRef.current) return;
-        dataFetchedRef.current = true;
-        fetchProjects();
-      }, []);
-    
-      const fetchProjects = async () => {
-        setIsLoading(true);
-        const response = await asyncGetAllProjects();
-        setIsLoading(false);
-    
-        console.log("response: ", response);
-        if (response) {
-          if (response?.data) {
-            setProjectsData(response.data);
-          }
-          // errorAlert(response);
-        }
-      };
+  const [isLoading, setIsLoading] = useState(false);
+  const [isadmins, setisadmin] = useState(null);
 
+  useEffect(() => {
+    if (!checkIsAuth()) {
+      Router.push("/login");
+      return;
+    }
+    const username = getUserName();
+    setUsername(username);
+    const isadmin = getisadminstatus();
+    setisadmin(isadmin);
+    if (dataFetchedRef.current) return;
+    dataFetchedRef.current = true;
+    fetchProjects();
+  }, []);
 
-      const handleOnClickViewProject = (data: any) => {
-        console.log(data);
-        if (data) {
-          Router.push({
-            pathname: "/deleteprojects",
-            query: { p_name: data?.p_name, code: data?.code },
-          },);
-        }
-      };
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    const response = await asyncGetAllProjects();
+    setIsLoading(false);
 
-
-      const handledeleteProject = async (data:any) => {
-        setIsLoading(true);
-        const response = await asyncdeleteproject(data);
-        window.location.reload();
-        successAlert("Deleted successfully");
-        setIsLoading(false);
-       
-    
-        console.log("response: ", response);
-        if (response) {
-          if (response?.data) {
-            successAlert("Login successfully");
-             console.log("deleted Successfully!")
-          }
-          errorAlert(response);
-        }
+    console.log("response: ", response);
+    if (response) {
+      if (response?.data) {
+        setProjectsData(response.data);
       }
+      // errorAlert(response);
+    }
+  };
 
+  const handleOnClickViewProject = (data: any) => {
+    console.log(data);
+    if (data) {
+      Router.push({
+        pathname: "/deleteprojects",
+        query: { p_name: data?.p_name, code: data?.code },
+      });
+    }
+  };
 
+  const handledeleteProject = async (data: any) => {
+    setIsLoading(true);
+    const response = await asyncdeleteproject(data);
+    window.location.reload();
+    successAlert("Deleted successfully");
+    setIsLoading(false);
 
+    console.log("response: ", response);
+    if (response) {
+      if (response?.data) {
+        successAlert("Login successfully");
+        console.log("deleted Successfully!");
+      }
+      errorAlert(response);
+    }
+  };
 
-    return (
-        <>
-        <s.HomeMain>
+  return (
+    <>
+      <s.HomeMain>
         {<Header></Header>}
-         <div className="welcome-block">
+        <div className="welcome-block">
           <div className="container">
             <div className="welcome-block-inner">
               <h3>Welcome to WiseScan</h3>
@@ -118,25 +113,22 @@ const WelcomePage = () => {
                   return (
                     <div className="projects-block-list-inner" key={index}>
                       <div className="projects-img">
-                        
                         <h5>{item?.p_name}</h5>
                       </div>
                       <div className="projects-link">
-                        <button
-                         
-                          onClick={() => handleOnClickViewProject(item)}
-                        >
+                        <button onClick={() => handleOnClickViewProject(item)}>
                           <img
                             src="assets/eye-outline.svg"
-                            alt="eye-outline"
-                          ></img>
+                            alt="eye-outline"></img>
                         </button>
-                      {isadmins === 'True' ? <button   onClick={() => handledeleteProject(item?.code)}>
-                          <img
-                            src="assets/trash-outline.svg"
-                            alt="trash-outline"
-                          ></img>
-                        </button> :null} 
+                        {isadmins === "True" ? (
+                          <button
+                            onClick={() => handledeleteProject(item?.code)}>
+                            <img
+                              src="assets/trash-outline.svg"
+                              alt="trash-outline"></img>
+                          </button>
+                        ) : null}
                       </div>
                     </div>
                   );
@@ -145,13 +137,12 @@ const WelcomePage = () => {
             </div>
           </div>
         </div>
-        
+
         <Loader isLoading={isLoading} />
         <Footer></Footer>
-        </s.HomeMain>
-        </>
-    );
-}
-
+      </s.HomeMain>
+    </>
+  );
+};
 
 export default WelcomePage;

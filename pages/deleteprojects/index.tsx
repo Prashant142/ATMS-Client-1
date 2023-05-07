@@ -133,14 +133,15 @@ const DeleteProjects = () => {
 
   const getprojectsdates = async () => {
     const response = await asyncgetdates(router?.query?.code);
+    // console.log("This is project dates", response);
     if (response || response?.data) {
       if (typeof response?.data !== "string") {
-        console.log(response);
+        // console.log("This is the ressss", response);
         setdays(response["days"]);
         setyears(response["years"]);
         setmonths(response["months"]);
         fetchProjectDetails(response["latestdate"]);
-        console.log(response["latestdate"]);
+        // console.log("Latest date", response["latestdate"]);
         setDate(response["latestdate"]);
       } else {
         errorAlert(response?.data);
@@ -149,7 +150,7 @@ const DeleteProjects = () => {
   };
 
   const onSubmitProduct = (data: any) => {
-    console.log(data);
+    console.log("ONSubmit product :", data);
     const { startDay, startMonth, startYear } = data;
     let start_date = startDay + "-" + startMonth + "-" + startYear;
     console.log("abs");
@@ -243,7 +244,9 @@ const DeleteProjects = () => {
       }
     }
   };
-  console.log("This is the fileData", filesData);
+  // console.log("This is the fileData", filesData);
+  const uniqueMonths = Array.from(new Set(months));
+  const uniqueYears = Array.from(new Set(years));
 
   return (
     <>
@@ -258,7 +261,7 @@ const DeleteProjects = () => {
               <form onSubmit={handleSubmit(onSubmitProduct)}>
                 <div className="select-custom-block">
                   <select
-                    defaultValue={days[0]}
+                    defaultValue={days[days.length - 1]}
                     {...register("startDay", { required: false })}>
                     {days.map((value) => {
                       return (
@@ -269,9 +272,9 @@ const DeleteProjects = () => {
                     })}
                   </select>
                   <select
-                    defaultValue={months[0]}
+                    defaultValue={uniqueMonths[uniqueMonths.length - 1]}
                     {...register("startMonth", { required: false })}>
-                    {months.map((value) => {
+                    {uniqueMonths.map((value) => {
                       return (
                         <option key={value} value={value}>
                           {value}
@@ -280,9 +283,9 @@ const DeleteProjects = () => {
                     })}
                   </select>
                   <select
-                    defaultValue={years[0]}
+                    defaultValue={uniqueYears[uniqueYears.length - 1]}
                     {...register("startYear", { required: false })}>
-                    {years.map((value: number, index) => {
+                    {uniqueYears.map((value: number, index) => {
                       return (
                         <option key={value} value={value}>
                           {value}

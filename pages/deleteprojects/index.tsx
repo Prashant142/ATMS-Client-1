@@ -247,6 +247,10 @@ const DeleteProjects = () => {
   // console.log("This is the fileData", filesData);
   const uniqueMonths = Array.from(new Set(months));
   const uniqueYears = Array.from(new Set(years));
+  function convertTimeFormat(time: string): string {
+    const [hour, minute] = time.split("-");
+    return `${hour}:${minute}`;
+  }
 
   return (
     <>
@@ -346,10 +350,11 @@ const DeleteProjects = () => {
                                 <img
                                   src="assets/file-icon.svg"
                                   alt="file-icon"></img>
-                                {/* <h4>{item?.filename}</h4> */}
+                                <h4>{item?.filename}</h4>
                               </div>
                             </td>
-                            <td>{item?.time}</td>
+                            {/* <td>{item?.time}</td> */}
+                            <td>{convertTimeFormat(item?.time)}</td>
                             <td
                               style={{
                                 display: "flex",

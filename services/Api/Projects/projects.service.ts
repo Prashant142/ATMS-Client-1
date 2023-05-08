@@ -43,13 +43,13 @@ export const asyncgetdates = async (payload: any) => {
   const data = {
     p_code: payload,
   };
-  // console.log(" Before call ", data);
+  console.log(" Before call ", data);
   try {
     const response = await api
       .get("/getProjectDates", { params: data })
       .then(async (res: any) => {
         if (res && res?.isSuccess) {
-          // console.log("After call", res.data);
+          console.log("After call", res.data);
           const years = res.data.years;
           const days = res.data.days;
           const months = res.data.months;

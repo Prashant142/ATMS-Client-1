@@ -133,11 +133,12 @@ const DeleteProjects = () => {
 
   const getprojectsdates = async () => {
     const response = await asyncgetdates(router?.query?.code);
-    // console.log("This is project dates", response);
+    console.log("This is project dates", response);
     if (response || response?.data) {
       if (typeof response?.data !== "string") {
-        // console.log("This is the ressss", response);
+        console.log("This is the ressss", response);
         setdays(response["days"]);
+        console.log("Days", response["days"]);
         setyears(response["years"]);
         setmonths(response["months"]);
         fetchProjectDetails(response["latestdate"]);
@@ -251,12 +252,13 @@ const DeleteProjects = () => {
     const [hour, minute] = time.split("-");
     return `${hour}:${minute}`;
   }
+  console.log("This is days", days);
 
   return (
     <>
       <s.HomeMain>
         {<Header></Header>}
-        {filesData.length > 0 ? (
+        {filesData.length > 0 && days !== undefined ? (
           <div className="welcome-block">
             <div className="container">
               <div className="projects-img-main">

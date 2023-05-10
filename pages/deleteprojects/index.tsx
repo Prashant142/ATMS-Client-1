@@ -109,7 +109,7 @@ const DeleteProjects = () => {
     const response = await asyncGetProjectDetails(params);
     if (response && response?.data) {
       if (typeof response?.data !== "string") {
-        console.log(response.data);
+        // console.log("This is the project response", response.data);
         setFilesData(response?.data);
       } else {
         errorAlert(response?.data);
@@ -133,12 +133,11 @@ const DeleteProjects = () => {
 
   const getprojectsdates = async () => {
     const response = await asyncgetdates(router?.query?.code);
-    console.log("This is project dates", response);
+    // console.log("This is project dates", response);
     if (response || response?.data) {
       if (typeof response?.data !== "string") {
-        console.log("This is the ressss", response);
+        // console.log("This is the ressss", response);
         setdays(response["days"]);
-        console.log("Days", response["days"]);
         setyears(response["years"]);
         setmonths(response["months"]);
         fetchProjectDetails(response["latestdate"]);
@@ -246,13 +245,70 @@ const DeleteProjects = () => {
     }
   };
   // console.log("This is the fileData", filesData);
-  const uniqueMonths = Array.from(new Set(months));
-  const uniqueYears = Array.from(new Set(years));
-  function convertTimeFormat(time: string): string {
+  // const uniqueMonths = Array.from(new Set(months));
+  // const uniqueYears = Array.from(new Set(years));
+  // const uniquedays = Array.from(new Set(days));
+  function convertTimeFormat(time: any) {
+    // console.log("This is time", time);
+
     const [hour, minute] = time.split("-");
     return `${hour}:${minute}`;
   }
-  console.log("This is days", days);
+  // console.log("This is days", days);
+  // Range date data
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  // const [fileData, setFileData] = useState<fileData[]>([]);
+  const [filterData, setFilterData] = useState(filesData);
+  const [isFilter, setFilter] = useState(false);
+
+  function formatDate(date: string): string {
+    const [day, month, year] = date.split("-"); // split by hyphen
+    const monthIndex = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ].indexOf(month);
+    const monthFormatted =
+      monthIndex >= 9 ? `${monthIndex + 1}` : `0${monthIndex + 1}`; // add leading zero if month is less than 10
+    const dayFormatted = parseInt(day) >= 10 ? day : `0${day}`; // add leading zero if day is less than 10
+    return `${year}-${monthFormatted}-${dayFormatted}`;
+  }
+
+  const handleStartDateChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setStartDate(event.target.value);
+    console.log("This is a start Date", startDate);
+  };
+
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(event.target.value);
+  };
+
+  const HandleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const filteredData = filesData.filter((data: any) => {
+      const dateFormatted = formatDate(data.date);
+      return dateFormatted >= startDate && dateFormatted <= endDate;
+    });
+    setFilterData(filteredData);
+    // console.log(filteredData); // you can display this data in a table below
+  };
+  const handleClear = () => {
+    setStartDate("");
+    setEndDate("");
+    setFilterData([]);
+  };
 
   return (
     <>
@@ -264,12 +320,45 @@ const DeleteProjects = () => {
               <div className="projects-img-main">
                 <h5>{queryData?.p_name}</h5>
               </div>
-              <form onSubmit={handleSubmit(onSubmitProduct)}>
+              <form onSubmit={HandleSubmit}>
                 <div className="select-custom-block">
-                  <select
+                  <p style={{ color: "black", padding: "20px" }}>From:</p>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={handleStartDateChange}
+                    style={{
+                      padding: "15px",
+                      borderRadius: "5px",
+                      border: "1px solid black",
+                      backgroundColor: "#e8e6e6",
+                      color: "#c46608",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                      cursor: "pointer",
+                    }}
+                  />
+                  <p style={{ color: "black", padding: "20px" }}>To:</p>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={handleEndDateChange}
+                    style={{
+                      padding: "15px",
+                      borderRadius: "5px",
+                      border: "1px solid black",
+                      backgroundColor: "#e8e6e6",
+                      cursor: "pointer",
+                      color: "#c46608",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                  />
+
+                  {/* <select
                     defaultValue={days[days.length - 1]}
                     {...register("startDay", { required: false })}>
-                    {days.map((value) => {
+                    {uniquedays.map((value) => {
                       return (
                         <option key={value} value={value}>
                           {value}
@@ -298,14 +387,14 @@ const DeleteProjects = () => {
                         </option>
                       );
                     })}
-                  </select>
-                  {(errors?.startDay ||
+                  </select> */}
+                  {/* {(errors?.startDay ||
                     errors?.startMonth ||
                     errors?.startYear) && (
                     <s.ErrorMessageBlock>
                       Please enter valid start date
                     </s.ErrorMessageBlock>
-                  )}
+                  )} */}
                   <div className="common-form-block-inner">
                     <div className="last-btn">
                       <button
@@ -313,6 +402,21 @@ const DeleteProjects = () => {
                         className="btn common-button-yellow"
                         value="Submit">
                         Submit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClear}
+                        style={{
+                          backgroundColor: "Gray",
+                          border: "None",
+                          padding: "15px",
+                          borderRadius: "5px",
+                          marginLeft: "15px",
+                          fontSize: "1rem",
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                        }}>
+                        Clear Data
                       </button>
                     </div>
                   </div>
@@ -328,69 +432,136 @@ const DeleteProjects = () => {
                         <th></th>
                         <th>Files name</th>
                         <th>Time</th>
+                        <th>Date</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filesData?.map((item: any, index: number) => {
-                        return (
-                          <tr key={index}>
-                            <td>
-                              {" "}
-                              <input
-                                style={{
-                                  accentColor: "red",
-                                  width: "15px",
-                                  height: "15px",
-                                }}
-                                type="checkbox"
-                                onChange={() => handleChecked(item.fid)}
-                              />{" "}
-                            </td>
-                            <td>
-                              <div className="pdf-block">
-                                <img
-                                  src="assets/file-icon.svg"
-                                  alt="file-icon"></img>
-                                <h4>{item?.filename}</h4>
-                              </div>
-                            </td>
-                            {/* <td>{item?.time}</td> */}
-                            <td>{convertTimeFormat(item?.time)}</td>
-                            <td
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}>
-                              <div className="action-block">
-                                <Link
-                                  href={item?.filepath}
-                                  target="_blank"
-                                  onClick={() => handleOnClickDownload(item)}>
-                                  <img
-                                    src="assets/download-icon.svg"
-                                    alt="download-icon"></img>
-                                </Link>
-                              </div>
-
-                              <div className="projects-link">
-                                {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
-                                <button
-                                  onClick={() => handleDelete(item.fid)}
+                      {filterData.length > 0
+                        ? filterData?.map((item: any, index: number) => {
+                            return (
+                              <tr key={index}>
+                                <td>
+                                  {" "}
+                                  <input
+                                    style={{
+                                      accentColor: "red",
+                                      width: "15px",
+                                      height: "15px",
+                                    }}
+                                    type="checkbox"
+                                    onChange={() => handleChecked(item.fid)}
+                                  />{" "}
+                                </td>
+                                <td>
+                                  <div className="pdf-block">
+                                    <img
+                                      src="assets/file-icon.svg"
+                                      alt="file-icon"></img>
+                                    <h4>{item.filename}</h4>
+                                  </div>
+                                </td>
+                                {/* <td>{item?.time}</td> */}
+                                <td>{convertTimeFormat(item.time)}</td>
+                                <td>{item.date}</td>
+                                <td
                                   style={{
-                                    backgroundColor: "white",
-                                    border: "none",
-                                    padding: "2px",
+                                    display: "flex",
+                                    justifyContent: "space-between",
                                   }}>
-                                  <img
-                                    src="assets/trash-outline.svg"
-                                    alt="trash-outline"></img>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                                  <div className="action-block">
+                                    <Link
+                                      href={item.filepath}
+                                      target="_blank"
+                                      onClick={() =>
+                                        handleOnClickDownload(item)
+                                      }>
+                                      <img
+                                        src="assets/download-icon.svg"
+                                        alt="download-icon"></img>
+                                    </Link>
+                                  </div>
+
+                                  <div className="projects-link">
+                                    {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
+                                    <button
+                                      onClick={() => handleDelete(item.fid)}
+                                      style={{
+                                        backgroundColor: "white",
+                                        border: "none",
+                                        padding: "2px",
+                                      }}>
+                                      <img
+                                        src="assets/trash-outline.svg"
+                                        alt="trash-outline"></img>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        : filesData?.map((item: any, index: number) => {
+                            return (
+                              <tr key={index}>
+                                <td>
+                                  {" "}
+                                  <input
+                                    style={{
+                                      accentColor: "red",
+                                      width: "15px",
+                                      height: "15px",
+                                    }}
+                                    type="checkbox"
+                                    onChange={() => handleChecked(item.fid)}
+                                  />{" "}
+                                </td>
+                                <td>
+                                  <div className="pdf-block">
+                                    <img
+                                      src="assets/file-icon.svg"
+                                      alt="file-icon"></img>
+                                    <h4>{item.filename}</h4>
+                                  </div>
+                                </td>
+                                {/* <td>{item?.time}</td> */}
+                                <td>{convertTimeFormat(item.time)}</td>
+                                <td>{item.date}</td>
+                                <td
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}>
+                                  <div className="action-block">
+                                    <Link
+                                      href={item.filepath}
+                                      target="_blank"
+                                      onClick={() =>
+                                        handleOnClickDownload(item)
+                                      }>
+                                      <img
+                                        src="assets/download-icon.svg"
+                                        alt="download-icon"></img>
+                                    </Link>
+                                  </div>
+
+                                  <div className="projects-link">
+                                    {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
+                                    <button
+                                      onClick={() => handleDelete(item.fid)}
+                                      style={{
+                                        backgroundColor: "white",
+                                        border: "none",
+                                        padding: "2px",
+                                      }}>
+                                      <img
+                                        src="assets/trash-outline.svg"
+                                        alt="trash-outline"></img>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
                     </tbody>
                   </table>
                 </s.TableCommon>

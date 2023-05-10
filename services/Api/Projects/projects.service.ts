@@ -29,7 +29,7 @@ export const asyncGetProjectDetails = async (payload: any) => {
       .get("/getProjectDetails", { params: payload })
       .then(async (res: any) => {
         if (res && res?.isSuccess) {
-          // console.log("This is the response: ", res);
+          // console.log("This is the response that should have dates: ", res);
           return res;
         }
       });

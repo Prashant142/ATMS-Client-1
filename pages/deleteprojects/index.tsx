@@ -27,6 +27,7 @@ import { checkIsAuth, getUserName } from "@/utils/globalFunctions";
 import { asyncLogout } from "@/services/auth/auth.service";
 import Header from "../Header/header";
 import Loader from "@/components/Loader";
+import { getisadminstatus } from "@/utils/globalFunctions";
 
 const addProjectValidationSchema = yup.object({
   startDay: yup.string().required("Start date is required"),
@@ -52,6 +53,7 @@ const DeleteProjects = () => {
   const [date, setDate] = useState("");
   const [store, setStore] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmins, setIsAdmin] = useState(null);
 
   const {
     register,
@@ -99,6 +101,13 @@ const DeleteProjects = () => {
   const handlechange = (event: SyntheticEvent, newValue: string) => {
     setValues(newValue);
   };
+
+  // isAdmin status from cookies
+  useEffect(() => {
+    const isAdmin = getisadminstatus();
+    setIsAdmin(isAdmin);
+    console.log("If user is admin or not : ", isAdmins);
+  }, []);
 
   const fetchProjectDetails = async (date: any) => {
     const params = {
@@ -268,6 +277,7 @@ const DeleteProjects = () => {
   const [filterData, setFilterData] = useState(filesData);
   const [isFilter, setFilter] = useState(false);
 
+  console.log("This is the filtered Data : ", filterData);
   function formatDate(date: string): string {
     const [day, month, year] = date.split("-"); // split by hyphen
     const monthIndex = [
@@ -294,7 +304,7 @@ const DeleteProjects = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setStartDate(event.target.value);
-    console.log("This is a start Date", startDate);
+    // console.log("This is a start Date", startDate);
   };
 
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -308,7 +318,7 @@ const DeleteProjects = () => {
       return dateFormatted >= startDate && dateFormatted <= endDate;
     });
     setFilterData(filteredData);
-    console.log("This is the filtered", filteredData); // you can display this data in a table below
+    // console.log("This is the filtered", filteredData); // you can display this data in a table below
   };
   const handleClear = () => {
     setStartDate("");
@@ -492,20 +502,22 @@ const DeleteProjects = () => {
                                       </Link>
                                     </div>
 
-                                    <div className="projects-link">
-                                      {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
-                                      <button
-                                        onClick={() => handleDelete(item.fid)}
-                                        style={{
-                                          backgroundColor: "white",
-                                          border: "none",
-                                          padding: "2px",
-                                        }}>
-                                        <img
-                                          src="assets/trash-outline.svg"
-                                          alt="trash-outline"></img>
-                                      </button>
-                                    </div>
+                                    {isAdmins === "True" ? (
+                                      <div className="projects-link">
+                                        {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
+                                        <button
+                                          onClick={() => handleDelete(item.fid)}
+                                          style={{
+                                            backgroundColor: "white",
+                                            border: "none",
+                                            padding: "2px",
+                                          }}>
+                                          <img
+                                            src="assets/trash-outline.svg"
+                                            alt="trash-outline"></img>
+                                        </button>
+                                      </div>
+                                    ) : null}
                                   </td>
                                 </tr>
                               );
@@ -514,16 +526,29 @@ const DeleteProjects = () => {
                             <div
                               style={{
                                 display: "flex",
+                                flexDirection: "column",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                height: "50vh",
+                                height: "40vh",
+                                width: "50vh",
+                                // backgroundColor: "black",
+                                marginLeft: "50vh",
                               }}>
                               <h2
                                 style={{
                                   color: "darkgray",
                                   fontSize: "3rem",
+                                  textAlign: "center", // Added textAlign property
                                 }}>
-                                No data found between the range!
+                                No data found
+                              </h2>
+                              <h2
+                                style={{
+                                  color: "darkgray",
+                                  fontSize: "3rem",
+                                  textAlign: "center", // Added textAlign property
+                                }}>
+                                between the range!
                               </h2>
                             </div>
                           ) : (
@@ -571,20 +596,22 @@ const DeleteProjects = () => {
                                       </Link>
                                     </div>
 
-                                    <div className="projects-link">
-                                      {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
-                                      <button
-                                        onClick={() => handleDelete(item.fid)}
-                                        style={{
-                                          backgroundColor: "white",
-                                          border: "none",
-                                          padding: "2px",
-                                        }}>
-                                        <img
-                                          src="assets/trash-outline.svg"
-                                          alt="trash-outline"></img>
-                                      </button>
-                                    </div>
+                                    {isAdmins === "True" ? (
+                                      <div className="projects-link">
+                                        {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
+                                        <button
+                                          onClick={() => handleDelete(item.fid)}
+                                          style={{
+                                            backgroundColor: "white",
+                                            border: "none",
+                                            padding: "2px",
+                                          }}>
+                                          <img
+                                            src="assets/trash-outline.svg"
+                                            alt="trash-outline"></img>
+                                        </button>
+                                      </div>
+                                    ) : null}
                                   </td>
                                 </tr>
                               );

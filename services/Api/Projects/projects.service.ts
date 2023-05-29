@@ -39,6 +39,26 @@ export const asyncGetProjectDetails = async (payload: any) => {
   }
 };
 
+export async function asyncGetClientDetails(username: string): Promise<any> {
+  const endpoint = "/getClients";
+
+  // Construct the API URL with the parameters
+  const url = `http://143.198.198.28:5002/getClient?usrnme=${username}`;
+
+  // Make the API call
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    // Log the response and parameters
+    console.log("Response:", data);
+    console.log("Username:", username);
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error; // Rethrow the error
+  }
+}
+
 export const asyncgetdates = async (payload: any) => {
   const data = {
     p_code: payload,

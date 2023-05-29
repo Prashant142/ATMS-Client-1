@@ -11,6 +11,7 @@ import {
   asyncGetProjectDetails,
   asyncgetdates,
   asyncdeltefiles,
+  asyncGetClientDetails,
 } from "@/services/Api/Projects/projects.service";
 import { eraseCookie, readCookie } from "@/utils/cookieCreator";
 import { Component, SyntheticEvent, useEffect, useState } from "react";
@@ -54,6 +55,7 @@ const DeleteProjects = () => {
   const [store, setStore] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmins, setIsAdmin] = useState(null);
+  const [clientDetails, setClientDetails] = useState<any>({});
 
   const {
     register,
@@ -123,7 +125,14 @@ const DeleteProjects = () => {
         // console.log("This is the project response", response.data);
         // setIsLoading(true);
         console.log(isLoading);
-        setFilesData(response?.data);
+        console.log("This is client details : ", clientDetails);
+        // setFilesData(response?.data);
+        console.log("Files Data ", filesData);
+        let filesData1 = response.data;
+        let respFiles = filterFilesForAllowedUser(filesData1, clientDetails);
+        setFilesData(respFiles);
+        console.log("This is file data for allowed ext: ", respFiles);
+        // setFilesData(response?.data);
         setIsLoading(false);
         console.log(isLoading);
       } else {
@@ -131,6 +140,43 @@ const DeleteProjects = () => {
       }
     }
   };
+
+  function filterFilesForAllowedUser(files: any, userData: any) {
+    const allowedFileTypes = Object.keys(userData)
+      .filter((key) => key.endsWith("_flag") && userData[key] === "True")
+      .map((key) => key.replace("_flag", ""));
+
+    return files.filter((file: any) => {
+      const fileType = file.filename.split(".").pop();
+      return allowedFileTypes.includes(fileType);
+    });
+  }
+
+  useEffect(() => {
+    fetchClientDetails();
+  }, []);
+
+  function fetchClientDetails() {
+    // Call the fetchClientDetails function
+    const username = getCookie("user-name");
+    asyncGetClientDetails(username)
+      .then((response) => {
+        setClientDetails(response);
+        console.log("This is the Response -:", response);
+        console.log("Some client details", clientDetails);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+  function getCookie(name: string): string {
+    const cookieValue = document.cookie
+      .split(";")
+      .map((cookie) => cookie.trim().split("="))
+      .reduce((acc, [key, value]) => (key === name ? value : acc), "");
+
+    return cookieValue;
+  }
 
   const handleOnClickDownload = async (data: any) => {
     console.log(data?.filename);

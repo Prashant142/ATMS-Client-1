@@ -43,6 +43,7 @@ const DeleteProjects = () => {
     p_name: "",
   });
 
+  const [clientDetails, setClientDetails] = useState<any>({});
   const [filesData, setFilesData] = useState<any>([]);
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -53,9 +54,8 @@ const DeleteProjects = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [date, setDate] = useState("");
   const [store, setStore] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAdmins, setIsAdmin] = useState(null);
-  const [clientDetails, setClientDetails] = useState<any>({});
 
   const {
     register,
@@ -111,33 +111,68 @@ const DeleteProjects = () => {
     console.log("If user is admin or not : ", isAdmins);
   }, []);
 
-  const fetchProjectDetails = async (date: any) => {
+  // useEffect(() => {
+  //   fetchClientDetails();
+  // }, []);
+  useEffect(() => {}, [clientDetails]);
+
+  const fetchClientDetails = async () => {
+    const username = getCookie("user-name");
+    try {
+      const response = await asyncGetClientDetails(username);
+      let client = response;
+      return client;
+      if (Object.keys(response).length) {
+        setClientDetails(client);
+        return true;
+      }
+    } catch (error) {
+      console.log("Error Getting CLient Details ", error);
+      return false;
+    }
+  };
+  // function fetchClientDetails() {
+
+  // asyncGetClientDetails(username)
+  //   .then((response) => {
+  //     console.log("This is the Response:", typeof response);
+  //     const client = response;
+  //     setClientDetails(client);
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error:", error);
+  //   });
+  // }
+
+  function getCookie(name: string): string {
+    const cookieValue = document.cookie
+      .split(";")
+      .map((cookie) => cookie.trim().split("="))
+      .reduce((acc, [key, value]) => (key === name ? value : acc), "");
+
+    return cookieValue;
+  }
+  const fetchProjectDetails = async (date: any, flag: any) => {
     const params = {
       p_code: router?.query?.code,
       p_name: router?.query?.p_name,
       date: date,
     };
 
-    console.log(params);
-    const response = await asyncGetProjectDetails(params);
-    if (response && response?.data) {
-      if (typeof response?.data !== "string") {
-        // console.log("This is the project response", response.data);
-        // setIsLoading(true);
-        console.log(isLoading);
-        console.log("This is client details : ", clientDetails);
-        // setFilesData(response?.data);
-        console.log("Files Data ", filesData);
-        let filesData1 = response.data;
-        let respFiles = filterFilesForAllowedUser(filesData1, clientDetails);
-        setFilesData(respFiles);
-        console.log("This is file data for allowed ext: ", respFiles);
-        // setFilesData(response?.data);
-        setIsLoading(false);
-        console.log(isLoading);
-      } else {
-        errorAlert(response?.data);
+    try {
+      const response: any = await asyncGetProjectDetails(params);
+      if (response && response.data) {
+        if (typeof response.data !== "string") {
+          const filteredFiles = filterFilesForAllowedUser(response.data, flag);
+          setFilesData(filteredFiles);
+          setIsLoading(false);
+        } else {
+          errorAlert(response.data);
+        }
       }
+    } catch (error) {
+      console.error("Error occurred:", error);
+      // Handle the error
     }
   };
 
@@ -150,32 +185,6 @@ const DeleteProjects = () => {
       const fileType = file.filename.split(".").pop();
       return allowedFileTypes.includes(fileType);
     });
-  }
-
-  useEffect(() => {
-    fetchClientDetails();
-  }, []);
-
-  function fetchClientDetails() {
-    // Call the fetchClientDetails function
-    const username = getCookie("user-name");
-    asyncGetClientDetails(username)
-      .then((response) => {
-        setClientDetails(response);
-        console.log("This is the Response -:", response);
-        console.log("Some client details", clientDetails);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-  function getCookie(name: string): string {
-    const cookieValue = document.cookie
-      .split(";")
-      .map((cookie) => cookie.trim().split("="))
-      .reduce((acc, [key, value]) => (key === name ? value : acc), "");
-
-    return cookieValue;
   }
 
   const handleOnClickDownload = async (data: any) => {
@@ -201,7 +210,9 @@ const DeleteProjects = () => {
         setdays(response["days"]);
         setyears(response["years"]);
         setmonths(response["months"]);
-        fetchProjectDetails(response["latestdate"]);
+        let flag = await fetchClientDetails();
+
+        flag && fetchProjectDetails(response["latestdate"], flag);
         // console.log("Latest date", response["latestdate"]);
         setDate(response["latestdate"]);
       } else {
@@ -210,8 +221,7 @@ const DeleteProjects = () => {
     }
   };
 
-  const onSubmitProduct = (data: any) => {
-    console.log("ONSubmit product :", data);
+  const onSubmitProduct = async (data: any) => {
     const { startDay, startMonth, startYear } = data;
     let start_date = startDay + "-" + startMonth + "-" + startYear;
     console.log("abs");
@@ -224,8 +234,9 @@ const DeleteProjects = () => {
     //   return;
     // }
     // const date = moment(start_date, "D-M-YYYY").format("D-MMM-YYYY");
-    fetchProjectDetails(start_date);
-    console.log("data :>> ", data, start_date);
+    let flag = await fetchClientDetails();
+    flag && fetchProjectDetails(start_date, flag);
+    // console.log("data :>> ", data, start_date);
   };
 
   const handleChecked = (item: any) => {
@@ -320,8 +331,7 @@ const DeleteProjects = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   // const [fileData, setFileData] = useState<fileData[]>([]);
-  const [filterData, setFilterData] = useState(filesData);
-  const [isFilter, setFilter] = useState(false);
+  const [filterData, setFilterData] = useState<any>(filesData);
 
   console.log("This is the filtered Data : ", filterData);
   function formatDate(date: string): string {
@@ -376,52 +386,50 @@ const DeleteProjects = () => {
     <>
       <s.HomeMain>
         {<Header></Header>}
-        {isLoading ? (
-          <Loader isLoading={true} />
-        ) : (
-          <div>
-            {filesData.length > 0 && days !== undefined ? (
-              <div className="welcome-block">
-                <div className="container">
-                  <div className="projects-img-main">
-                    <h5>{queryData?.p_name}</h5>
-                  </div>
-                  <form onSubmit={HandleSubmit}>
-                    <div className="select-custom-block">
-                      <p style={{ color: "black", padding: "20px" }}>From:</p>
-                      <input
-                        type="date"
-                        value={startDate}
-                        onChange={handleStartDateChange}
-                        style={{
-                          padding: "15px",
-                          borderRadius: "5px",
-                          border: "1px solid black",
-                          backgroundColor: "#e8e6e6",
-                          color: "#c46608",
-                          fontWeight: "bold",
-                          fontSize: "1rem",
-                          cursor: "pointer",
-                        }}
-                      />
-                      <p style={{ color: "black", padding: "20px" }}>To:</p>
-                      <input
-                        type="date"
-                        value={endDate}
-                        onChange={handleEndDateChange}
-                        style={{
-                          padding: "15px",
-                          borderRadius: "5px",
-                          border: "1px solid black",
-                          backgroundColor: "#e8e6e6",
-                          cursor: "pointer",
-                          color: "#c46608",
-                          fontWeight: "bold",
-                          fontSize: "1rem",
-                        }}
-                      />
+        <Loader isLoading={isLoading} />
+        <div>
+          {filesData.length > 0 && days !== undefined ? (
+            <div className="welcome-block">
+              <div className="container">
+                <div className="projects-img-main">
+                  <h5>{queryData?.p_name}</h5>
+                </div>
+                <form onSubmit={HandleSubmit}>
+                  <div className="select-custom-block">
+                    <p style={{ color: "black", padding: "20px" }}>From:</p>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={handleStartDateChange}
+                      style={{
+                        padding: "15px",
+                        borderRadius: "5px",
+                        border: "1px solid black",
+                        backgroundColor: "#e8e6e6",
+                        color: "#c46608",
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        cursor: "pointer",
+                      }}
+                    />
+                    <p style={{ color: "black", padding: "20px" }}>To:</p>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={handleEndDateChange}
+                      style={{
+                        padding: "15px",
+                        borderRadius: "5px",
+                        border: "1px solid black",
+                        backgroundColor: "#e8e6e6",
+                        cursor: "pointer",
+                        color: "#c46608",
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                      }}
+                    />
 
-                      {/* <select
+                    {/* <select
                         defaultValue={days[days.length - 1]}
                         {...register("startDay", { required: false })}>
                         {uniquedays.map((value) => {
@@ -454,240 +462,239 @@ const DeleteProjects = () => {
                           );
                         })}
                       </select> */}
-                      {/* {(errors?.startDay ||
+                    {/* {(errors?.startDay ||
                         errors?.startMonth ||
                         errors?.startYear) && (
                         <s.ErrorMessageBlock>
                           Please enter valid start date
                         </s.ErrorMessageBlock>
                       )} */}
-                      <div className="common-form-block-inner">
-                        <div className="last-btn">
-                          <button
-                            type="submit"
-                            className="btn common-button-yellow"
-                            value="Submit">
-                            Submit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleClear}
-                            style={{
-                              backgroundColor: "Gray",
-                              border: "None",
-                              padding: "15px",
-                              borderRadius: "5px",
-                              marginLeft: "15px",
-                              fontSize: "1rem",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                            }}>
-                            Clear Data
-                          </button>
-                        </div>
+                    <div className="common-form-block-inner">
+                      <div className="last-btn">
+                        <button
+                          type="submit"
+                          className="btn common-button-yellow"
+                          value="Submit">
+                          Submit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleClear}
+                          style={{
+                            backgroundColor: "Gray",
+                            border: "None",
+                            padding: "15px",
+                            borderRadius: "5px",
+                            marginLeft: "15px",
+                            fontSize: "1rem",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                          }}>
+                          Clear Data
+                        </button>
                       </div>
                     </div>
-                  </form>
-                  {filesData[0]?.err ? (
-                    <h1 style={{ color: "darkgray" }}>{filesData[0].err}</h1>
-                  ) : (
-                    <s.TableCommon>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>Files name</th>
-                            <th>Time</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filterData.length > 0 ? (
-                            filterData?.map((item: any, index: number) => {
-                              return (
-                                <tr key={index}>
-                                  <td>
-                                    {" "}
-                                    <input
-                                      style={{
-                                        accentColor: "red",
-                                        width: "15px",
-                                        height: "15px",
-                                      }}
-                                      type="checkbox"
-                                      onChange={() => handleChecked(item.fid)}
-                                    />{" "}
-                                  </td>
-                                  <td>
-                                    <div className="pdf-block">
-                                      <img
-                                        src="assets/file-icon.svg"
-                                        alt="file-icon"></img>
-                                      <h4>{item.filename}</h4>
-                                    </div>
-                                  </td>
-                                  {/* <td>{item?.time}</td> */}
-                                  <td>{convertTimeFormat(item.time)}</td>
-                                  <td>{item.date}</td>
-                                  <td
+                  </div>
+                </form>
+                {filesData[0]?.err ? (
+                  <h1 style={{ color: "darkgray" }}>{filesData[0].err}</h1>
+                ) : (
+                  <s.TableCommon>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Files name</th>
+                          <th>Time</th>
+                          <th>Date</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filterData.length > 0 ? (
+                          filterData?.map((item: any, index: number) => {
+                            return (
+                              <tr key={index}>
+                                <td>
+                                  {" "}
+                                  <input
                                     style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                    }}>
-                                    <div className="action-block">
-                                      <Link
-                                        href={item.filepath}
-                                        target="_blank"
-                                        onClick={() =>
-                                          handleOnClickDownload(item)
-                                        }>
-                                        <img
-                                          src="assets/download-icon.svg"
-                                          alt="download-icon"></img>
-                                      </Link>
-                                    </div>
+                                      accentColor: "red",
+                                      width: "15px",
+                                      height: "15px",
+                                    }}
+                                    type="checkbox"
+                                    onChange={() => handleChecked(item.fid)}
+                                  />{" "}
+                                </td>
+                                <td>
+                                  <div className="pdf-block">
+                                    <img
+                                      src="assets/file-icon.svg"
+                                      alt="file-icon"></img>
+                                    <h4>{item.filename}</h4>
+                                  </div>
+                                </td>
+                                {/* <td>{item?.time}</td> */}
+                                <td>{convertTimeFormat(item.time)}</td>
+                                <td>{item.date}</td>
+                                <td
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}>
+                                  <div className="action-block">
+                                    <Link
+                                      href={item.filepath}
+                                      target="_blank"
+                                      onClick={() =>
+                                        handleOnClickDownload(item)
+                                      }>
+                                      <img
+                                        src="assets/download-icon.svg"
+                                        alt="download-icon"></img>
+                                    </Link>
+                                  </div>
 
-                                    {isAdmins === "True" ? (
-                                      <div className="projects-link">
-                                        {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
-                                        <button
-                                          onClick={() => handleDelete(item.fid)}
-                                          style={{
-                                            backgroundColor: "white",
-                                            border: "none",
-                                            padding: "2px",
-                                          }}>
-                                          <img
-                                            src="assets/trash-outline.svg"
-                                            alt="trash-outline"></img>
-                                        </button>
-                                      </div>
-                                    ) : null}
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          ) : startDate && endDate ? (
-                            <div
+                                  {isAdmins === "True" ? (
+                                    <div className="projects-link">
+                                      {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
+                                      <button
+                                        onClick={() => handleDelete(item.fid)}
+                                        style={{
+                                          backgroundColor: "white",
+                                          border: "none",
+                                          padding: "2px",
+                                        }}>
+                                        <img
+                                          src="assets/trash-outline.svg"
+                                          alt="trash-outline"></img>
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        ) : startDate && endDate ? (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height: "40vh",
+                              width: "50vh",
+                              // backgroundColor: "black",
+                              marginLeft: "50vh",
+                            }}>
+                            <h2
                               style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "40vh",
-                                width: "50vh",
-                                // backgroundColor: "black",
-                                marginLeft: "50vh",
+                                color: "darkgray",
+                                fontSize: "3rem",
+                                textAlign: "center", // Added textAlign property
                               }}>
-                              <h2
-                                style={{
-                                  color: "darkgray",
-                                  fontSize: "3rem",
-                                  textAlign: "center", // Added textAlign property
-                                }}>
-                                No data found
-                              </h2>
-                              <h2
-                                style={{
-                                  color: "darkgray",
-                                  fontSize: "3rem",
-                                  textAlign: "center", // Added textAlign property
-                                }}>
-                                between the range!
-                              </h2>
-                            </div>
-                          ) : (
-                            filesData?.map((item: any, index: number) => {
-                              return (
-                                <tr key={index}>
-                                  <td>
-                                    {" "}
-                                    <input
-                                      style={{
-                                        accentColor: "red",
-                                        width: "15px",
-                                        height: "15px",
-                                      }}
-                                      type="checkbox"
-                                      onChange={() => handleChecked(item.fid)}
-                                    />{" "}
-                                  </td>
-                                  <td>
-                                    <div className="pdf-block">
-                                      <img
-                                        src="assets/file-icon.svg"
-                                        alt="file-icon"></img>
-                                      <h4>{item.filename}</h4>
-                                    </div>
-                                  </td>
-                                  {/* <td>{item?.time}</td> */}
-                                  <td>{convertTimeFormat(item.time)}</td>
-                                  <td>{item.date}</td>
-                                  <td
+                              No data found
+                            </h2>
+                            <h2
+                              style={{
+                                color: "darkgray",
+                                fontSize: "3rem",
+                                textAlign: "center", // Added textAlign property
+                              }}>
+                              between the range!
+                            </h2>
+                          </div>
+                        ) : (
+                          filesData?.map((item: any, index: number) => {
+                            return (
+                              <tr key={index}>
+                                <td>
+                                  {" "}
+                                  <input
                                     style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                    }}>
-                                    <div className="action-block">
-                                      <Link
-                                        href={item.filepath}
-                                        target="_blank"
-                                        onClick={() =>
-                                          handleOnClickDownload(item)
-                                        }>
-                                        <img
-                                          src="assets/download-icon.svg"
-                                          alt="download-icon"></img>
-                                      </Link>
-                                    </div>
+                                      accentColor: "red",
+                                      width: "15px",
+                                      height: "15px",
+                                    }}
+                                    type="checkbox"
+                                    onChange={() => handleChecked(item.fid)}
+                                  />{" "}
+                                </td>
+                                <td>
+                                  <div className="pdf-block">
+                                    <img
+                                      src="assets/file-icon.svg"
+                                      alt="file-icon"></img>
+                                    <h4>{item.filename}</h4>
+                                  </div>
+                                </td>
+                                {/* <td>{item?.time}</td> */}
+                                <td>{convertTimeFormat(item.time)}</td>
+                                <td>{item.date}</td>
+                                <td
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}>
+                                  <div className="action-block">
+                                    <Link
+                                      href={item.filepath}
+                                      target="_blank"
+                                      onClick={() =>
+                                        handleOnClickDownload(item)
+                                      }>
+                                      <img
+                                        src="assets/download-icon.svg"
+                                        alt="download-icon"></img>
+                                    </Link>
+                                  </div>
 
-                                    {isAdmins === "True" ? (
-                                      <div className="projects-link">
-                                        {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
-                                        <button
-                                          onClick={() => handleDelete(item.fid)}
-                                          style={{
-                                            backgroundColor: "white",
-                                            border: "none",
-                                            padding: "2px",
-                                          }}>
-                                          <img
-                                            src="assets/trash-outline.svg"
-                                            alt="trash-outline"></img>
-                                        </button>
-                                      </div>
-                                    ) : null}
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          )}
-                        </tbody>
-                      </table>
-                    </s.TableCommon>
-                  )}
-                </div>
+                                  {isAdmins === "True" ? (
+                                    <div className="projects-link">
+                                      {/* [{"code":"Demo_4", "date":"26-Mar-2023","fid":"16798368567399263"}] */}
+                                      <button
+                                        onClick={() => handleDelete(item.fid)}
+                                        style={{
+                                          backgroundColor: "white",
+                                          border: "none",
+                                          padding: "2px",
+                                        }}>
+                                        <img
+                                          src="assets/trash-outline.svg"
+                                          alt="trash-outline"></img>
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </s.TableCommon>
+                )}
               </div>
-            ) : (
-              <div
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "67vh",
+              }}>
+              <h2
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "67vh",
+                  color: "darkgray",
+                  fontSize: "3rem",
                 }}>
-                <h2
-                  style={{
-                    color: "darkgray",
-                    fontSize: "3rem",
-                  }}>
-                  No Data Found!
-                </h2>
-              </div>
-            )}
-          </div>
-        )}
+                No Data Found!
+              </h2>
+            </div>
+          )}
+        </div>
       </s.HomeMain>
       <Footer />
     </>

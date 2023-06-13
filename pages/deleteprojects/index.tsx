@@ -403,7 +403,7 @@ const DeleteProjects = () => {
         {<Header></Header>}
         <Loader isLoading={isLoading} />
         <div>
-          {newFilteredData.length > 0 && days !== undefined ? (
+          {filesData.length > 0 && days !== undefined ? (
             <div className="welcome-block">
               <div className="container">
                 <div className="projects-img-main">

@@ -389,7 +389,7 @@ const DeleteProjects = () => {
     const someFilteredData = filesData.filter(
       (item: { date: { toDateString: () => string } }) => {
         // Assuming 'date' property is a Date object
-        return item.date.toDateString() === currentDate.toDateString();
+        return item.date === currentDate;
       }
     );
 
@@ -620,7 +620,7 @@ const DeleteProjects = () => {
                               between the range!
                             </h2>
                           </div>
-                        ) : (
+                        ) : newFilteredData.length > 0 ? (
                           newFilteredData?.map((item: any, index: number) => {
                             return (
                               <tr key={index}>
@@ -685,6 +685,23 @@ const DeleteProjects = () => {
                               </tr>
                             );
                           })
+                        ) : (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height: "60vh",
+                              paddingLeft: "60vh",
+                            }}>
+                            <h2
+                              style={{
+                                color: "darkgray",
+                                fontSize: "3rem",
+                              }}>
+                              No Data Found!
+                            </h2>
+                          </div>
                         )}
                       </tbody>
                     </table>

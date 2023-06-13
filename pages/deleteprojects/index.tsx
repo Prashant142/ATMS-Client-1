@@ -203,10 +203,10 @@ const DeleteProjects = () => {
 
   const getprojectsdates = async () => {
     const response = await asyncgetdates(router?.query?.code);
-    // console.log("This is project dates", response);
+    console.log("This is project dates", response);
     if (response || response?.data) {
       if (typeof response?.data !== "string") {
-        // console.log("This is the ressss", response);
+        console.log("This is the ressss", response);
         setdays(response["days"]);
         setyears(response["years"]);
         setmonths(response["months"]);
@@ -382,13 +382,28 @@ const DeleteProjects = () => {
     setFilterData([]);
   };
 
+  const [newFilteredData, setNewFilteredData] = useState([]);
+  useEffect(() => {
+    // Filter the data to get only the data of the present date
+    const currentDate = new Date();
+    const someFilteredData = filesData.filter(
+      (item: { date: { toDateString: () => string } }) => {
+        // Assuming 'date' property is a Date object
+        return item.date.toDateString() === currentDate.toDateString();
+      }
+    );
+
+    setNewFilteredData(someFilteredData);
+    console.log("This is new filter data : ", someFilteredData);
+  }, []);
+
   return (
     <>
       <s.HomeMain>
         {<Header></Header>}
         <Loader isLoading={isLoading} />
         <div>
-          {filesData.length > 0 && days !== undefined ? (
+          {newFilteredData.length > 0 && days !== undefined ? (
             <div className="welcome-block">
               <div className="container">
                 <div className="projects-img-main">
@@ -606,7 +621,7 @@ const DeleteProjects = () => {
                             </h2>
                           </div>
                         ) : (
-                          filesData?.map((item: any, index: number) => {
+                          newFilteredData?.map((item: any, index: number) => {
                             return (
                               <tr key={index}>
                                 <td>
